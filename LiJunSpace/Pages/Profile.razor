@@ -1,0 +1,42 @@
+﻿@page "/profile"
+@inherits LiJunSpace.ViewModels.ProfileComponentViewModel;
+
+<MudCard Style="margin:10px 10px 10px 10px">
+    <MudCardHeader>
+        <CardHeaderAvatar>
+            <MudImage Src="@Profile.Avatar" Width="70" onclick="@(()=>{OpenAvatarDrawer(Anchor.Bottom);})"></MudImage>
+        </CardHeaderAvatar>
+        <CardHeaderContent>
+            <MudText Typo="Typo.body1">@Profile.DisplayName</MudText>
+            <MudText Typo="Typo.overline">用户名：@Profile.UserName</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Default" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudText Typo="Typo.body2">
+            个人签名: @if (Profile.Signature == null)
+            {
+                <span>暂无</span>
+            }
+            else
+            {
+                <span>@Profile.Signature</span>
+            }
+        </MudText>
+    </MudCardContent>
+    <MudCardContent>
+        <MudText Typo="Typo.body2">生日: @Profile.Birthday</MudText>
+    </MudCardContent>
+    <MudCardActions>
+        <MudIconButton Icon="@Icons.Material.Filled.Favorite" Color="Color.Default" />
+        <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Default" />
+    </MudCardActions>
+    <MudDrawer @bind-Open="@Open" Width="@Width" Height="@Height" Anchor="@Anchor" Elevation="1" Variant="@DrawerVariant.Temporary">
+        <MudNavMenu>
+            <MudNavLink Match="NavLinkMatch.All">查看大图</MudNavLink>
+            <MudNavLink Match="NavLinkMatch.All">更换头像</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+</MudCard>

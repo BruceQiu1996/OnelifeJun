@@ -1,0 +1,39 @@
+﻿@inherits LiJunSpace.ViewModels.LoginComponentViewModel;
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@page "/login"
+@layout EmptyLayout
+
+<EditForm OnValidSubmit="OnValidSubmit" Model="@model">
+    <DataAnnotationsValidator />
+    <MudGrid Justify="Justify.Center" style="max-width:500px;">
+        <MudItem xs="12" Style="height:150px;margin-top:20px">
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <MudAlert Severity="Severity.Warning" >@errorMessage</MudAlert>
+            }
+        </MudItem>
+        <MudItem xs="12">
+            <MudCard>
+                <h2>丽君球球的生活记录空间</h2>
+                <MudCardContent>
+                    <MudTextField Label="用户名"
+                                  @bind-Value="model.Username" For="@(() =>model.Username)" />
+                    <MudTextField Label="密码" Class="mt-3"
+                                  @bind-Value="model.Password" For="@(() =>model. Password)" InputType="InputType.Password" />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">登录</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+<style>
+    h2 {
+        display: flex;
+        color: #555;
+        justify-content: center; /* 水平居中 */
+        align-items: center; /* 垂直居中 */
+    }
+</style>

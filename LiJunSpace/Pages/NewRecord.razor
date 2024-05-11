@@ -1,0 +1,39 @@
+﻿@inherits LiJunSpace.ViewModels.NewRecordComponentViewModel;
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@page "/newRecord"
+
+<MudCard Style="margin:5px 5px 5px 5px;height:100%">
+    <MudCardContent xs="12">
+        <MudTextField @bind-Value="@Title" xs="12" Label="标题" Variant="Variant.Outlined" Clearable="true" />
+    </MudCardContent>
+    <MudCardContent xs="12">
+        <MudTextField T="string" xs="12" Label="正文" Variant="Variant.Outlined" @bind-Value="@Content" Lines="5" />
+    </MudCardContent>
+
+    <MudFileUpload Accept=".png, .jpg" T="IReadOnlyList<IBrowserFile>" FilesChanged="UploadFilesAsync">
+        <ButtonTemplate>
+            <MudButton HtmlTag="label"
+                       Style="margin-left:18px"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.CloudUpload"
+                       for="@context.Id">
+                上传图片
+            </MudButton>
+        </ButtonTemplate>
+    </MudFileUpload>
+    <MudGrid Justify="Justify.Center">
+        @if (ImageList != null && ImageList.Count > 0)
+        {
+
+            @foreach (var file in ImageList)
+            {
+                <MudItem xs="4">
+                    <MudImage Height="100" Width="100" ObjectFit="ObjectFit.Fill" Src="@file" Alt="Mony the dog" Elevation="25" Class="rounded-lg" />
+                </MudItem>
+            }
+
+        }
+    </MudGrid>
+</MudCard>
