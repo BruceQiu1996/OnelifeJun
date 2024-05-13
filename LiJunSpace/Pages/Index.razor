@@ -4,3 +4,20 @@
 <PageTitle>Index</PageTitle>
 
 <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" OnClick="NewRecord" />
+@foreach (var record in Records)
+{
+    <MudCard>
+        @if (record.Images.Count >= 1)
+        {
+            <MudCardMedia Image="@record.Images.First()" Height="200" />
+        }
+        <MudCardContent>
+            <MudText Typo="Typo.h5">@record.Title</MudText>
+            <MudText Typo="Typo.body2">@record.Content</MudText>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Variant="Variant.Text" Color="Color.Primary">Share</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
+        </MudCardActions>
+    </MudCard>
+}

@@ -13,7 +13,10 @@ namespace LiJunSpace
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
-            builder.Services.AddMudServices();
+            builder.Services.AddMudServices(config => 
+            {
+                config.SnackbarConfiguration.VisibleStateDuration = 3000;
+            });
             builder.Services.AddSingleton<HttpRequest>();
             await builder.Build().RunAsync();
         }

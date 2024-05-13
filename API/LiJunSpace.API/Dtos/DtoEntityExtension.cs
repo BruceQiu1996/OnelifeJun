@@ -1,5 +1,6 @@
 ﻿using LiJunSpace.API.Database.Entities;
 using LiJunSpace.Common.Dtos.Account;
+using LiJunSpace.Common.Dtos.Record;
 
 namespace LiJunSpace.API.Dtos
 {
@@ -18,6 +19,32 @@ namespace LiJunSpace.API.Dtos
                 Signature = account.Signature,
                 Avatar = account.Avatar,
             };
+        }
+
+        public static Record ToRecordEntity(this RecordCreationDto recordCreationDto, string publisher)
+        {
+            return new Record()
+            {
+                Publisher = publisher,
+                PublishTime = DateTime.Now,
+                Title = recordCreationDto.Title,
+                Content = recordCreationDto.Content,
+            };
+        }
+
+        public static RecordDto ToDto(this Record record)
+        {
+            var dto = new RecordDto()
+            {
+                Id = record.Id,
+                Title = record.Title,
+                Content = record.Content,
+                PublisherId = record.Account.Id,
+                PublisherDisplayName = record.Account.DisplayName,
+                PublishTime = record.PublishTime,
+            };
+
+            return dto;
         }
     }
 }

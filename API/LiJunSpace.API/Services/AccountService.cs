@@ -60,8 +60,6 @@ namespace LiJunSpace.API.Services
             var user = await _junRecordDbContext.Accounts.FirstOrDefaultAsync(x=>x.Id== userId);
             if(user==null)
                 return new ServiceResult<UserProfileDto>(HttpStatusCode.BadRequest, "用户异常");
-            user.Avatar = user.Avatar == null ? user.Avatar : 
-                user.Avatar.Replace(_configuration.GetSection("FileStorage:AvatarImagesLocation").Value!, null);
 
             if (string.IsNullOrEmpty(user.Avatar)) 
             {

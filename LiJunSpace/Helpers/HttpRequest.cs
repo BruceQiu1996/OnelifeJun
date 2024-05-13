@@ -17,7 +17,7 @@ namespace LiJunSpace.Helpers
         public HttpRequest(IJSRuntime jsRuntime)
         {
             _jsRuntime = jsRuntime;
-            _httpClient = new HttpClient() ;
+            _httpClient = new HttpClient();
             _jsonSerializerOptions.Encoder = JavaScriptEncoder.Create(new TextEncoderSettings(UnicodeRanges.All));
             _jsonSerializerOptions.ReadCommentHandling = JsonCommentHandling.Skip;
             _jsonSerializerOptions.PropertyNameCaseInsensitive = true;
@@ -91,6 +91,44 @@ namespace LiJunSpace.Helpers
                 content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                 resp = await _httpClient.PutAsync(url, content);
             }
+            if (resp.IsSuccessStatusCode)
+            {
+                return resp;
+            }
+            else if (resp.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                ExcuteWhileUnauthorized?.Invoke();
+                return default;
+            }
+            else if (resp.StatusCode == HttpStatusCode.BadRequest)
+            {
+                var message = await resp.Content.ReadAsStringAsync();
+                ExcuteWhileBadRequest?.Invoke(message);
+            }
+            else if (resp.StatusCode == HttpStatusCode.InternalServerError)
+            {
+                var message = await resp.Content.ReadAsStringAsync();
+                ExcuteWhileInternalServerError?.Invoke(message);
+            }
+
+            return default;
+        }
+
+        public async Task<HttpResponseMessage> PostImageAsync(string url, string filename, byte[] bytes)
+        {
+            await SetTokenAsync();
+            var fileContent = new ByteArrayContent(bytes);
+            fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+            {
+                Name = "file",
+                FileName = filename
+            };
+            var content = new MultipartFormDataContent
+                {
+                    fileContent
+                };
+
+            var resp = await _httpClient.PostAsync(url, content);
             if (resp.IsSuccessStatusCode)
             {
                 return resp;

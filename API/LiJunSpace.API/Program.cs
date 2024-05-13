@@ -104,6 +104,12 @@ namespace LiJunSpace.API
                 RequestPath = new PathString("/api/avatars"),
                 EnableDirectoryBrowsing = false
             });
+            app.UseFileServer(new FileServerOptions()
+            {
+                FileProvider = new PhysicalFileProvider(app.Configuration.GetSection("FileStorage:RecordImagesLocation").Value!),
+                RequestPath = new PathString("/api/record/images"),
+                EnableDirectoryBrowsing = false
+            });
             app.UseStaticFiles(new StaticFileOptions()
             {
                 OnPrepareResponse = ctx =>
