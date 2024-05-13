@@ -46,7 +46,7 @@ namespace LiJunSpace.API.Services
             {
                 var token = CreateToken(user);
 
-                return new ServiceResult<UserLoginResponseDto>(new UserLoginResponseDto { AccessToken = token});
+                return new ServiceResult<UserLoginResponseDto>(new UserLoginResponseDto { AccessToken = token, Id = user.Id });
             }
         }
 
@@ -57,11 +57,11 @@ namespace LiJunSpace.API.Services
         /// <returns></returns>
         public async Task<ServiceResult<UserProfileDto>> ProfileAsync(string userId)
         {
-            var user = await _junRecordDbContext.Accounts.FirstOrDefaultAsync(x=>x.Id== userId);
-            if(user==null)
+            var user = await _junRecordDbContext.Accounts.FirstOrDefaultAsync(x => x.Id == userId);
+            if (user == null)
                 return new ServiceResult<UserProfileDto>(HttpStatusCode.BadRequest, "用户异常");
 
-            if (string.IsNullOrEmpty(user.Avatar)) 
+            if (string.IsNullOrEmpty(user.Avatar))
             {
                 user.Avatar = user.Sex ? "default1.jpg" : "default0.jpg";
             }

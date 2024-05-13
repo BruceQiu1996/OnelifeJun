@@ -4,6 +4,7 @@ using LiJunSpace.API.Dtos;
 using LiJunSpace.Common.Dtos.Record;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using System.Text.Json;
 
 namespace LiJunSpace.API.Services
 {
@@ -52,6 +53,16 @@ namespace LiJunSpace.API.Services
         public async Task<ServiceResult> CreateNewRecordAsync(RecordCreationDto recordCreationDto, string userId)
         {
             var entity = recordCreationDto.ToRecordEntity(userId);
+            if (!string.IsNullOrEmpty(entity.Images)) 
+            {
+                var imageItems = JsonSerializer.Deserialize<IEnumerable<string>>(entity.Images);
+                foreach (var item in imageItems) 
+                {
+                    var path = Path.Combine(_configuration.GetSection("FileStorage:RecordImagesLocation").Value!, $"user-{userId}",item);
+                    if (!File.Exists(path))
+                        throw new InvalidOperationException("Can't find Image Location");
+                }
+            }
             _junRecordDbContext.Records.Add(entity);
             await _junRecordDbContext.SaveChangesAsync();
 

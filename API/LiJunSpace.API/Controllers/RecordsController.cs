@@ -37,7 +37,7 @@ namespace LiJunSpace.API.Controllers
 
 
         [Authorize]
-        [HttpPost()]
+        [HttpPost]
         public async Task<ActionResult> Create(RecordCreationDto creationDto)
         {
             try
@@ -54,12 +54,17 @@ namespace LiJunSpace.API.Controllers
         }
 
         [Authorize]
-        [HttpGet()]
-        public async Task<ActionResult> Get(RecordQueryDto recordQueryDto)
+        [HttpGet("{page}")]
+        public async Task<ActionResult> Get(int page, string key = null, bool desc = true)
         {
             try
             {
-                var result = await _recordService.GetByPageAsync(recordQueryDto);
+                var result = await _recordService.GetByPageAsync(new RecordQueryDto()
+                {
+                    Page = page,
+                    Key = key,
+                    TimeDesc = desc
+                });
 
                 return result.ToActionResult();
             }

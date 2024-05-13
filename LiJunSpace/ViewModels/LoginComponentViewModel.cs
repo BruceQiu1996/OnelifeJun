@@ -55,7 +55,7 @@ namespace LiJunSpace.ViewModels
                 var userInfo = JsonSerializer
                     .Deserialize<UserLoginResponseDto>(await resp.Content.ReadAsStringAsync(), HttpRequest._jsonSerializerOptions);
                 await JSRuntime.InvokeVoidAsync("localStorageInterop.setItem", "token", userInfo.AccessToken);
-
+                await JSRuntime.InvokeVoidAsync("localStorageInterop.setItem", "userId", userInfo.Id);
                 Navigation.NavigateTo("/", forceLoad: false, replace: true);
             }
         }

@@ -6,7 +6,7 @@
 <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" OnClick="NewRecord" />
 @foreach (var record in Records)
 {
-    <MudCard>
+    <MudCard Style="margin:10px">
         @if (record.Images.Count >= 1)
         {
             <MudCardMedia Image="@record.Images.First()" Height="200" />

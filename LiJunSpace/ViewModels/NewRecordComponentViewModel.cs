@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 
 namespace LiJunSpace.ViewModels
 {
@@ -100,15 +101,7 @@ namespace LiJunSpace.ViewModels
             RecordCreationDto recordCreationDto = new RecordCreationDto();
             recordCreationDto.Title = Title;
             recordCreationDto.Content = Content;
-            recordCreationDto.Image_1 = fileNames.Count >= 1 ? fileNames[0] : null;
-            recordCreationDto.Image_2 = fileNames.Count >= 2 ? fileNames[1] : null;
-            recordCreationDto.Image_3 = fileNames.Count >= 3 ? fileNames[2] : null;
-            recordCreationDto.Image_4 = fileNames.Count >= 4 ? fileNames[3] : null;
-            recordCreationDto.Image_5 = fileNames.Count >= 5 ? fileNames[4] : null;
-            recordCreationDto.Image_6 = fileNames.Count >= 6 ? fileNames[5] : null;
-            recordCreationDto.Image_7 = fileNames.Count >= 7 ? fileNames[6] : null;
-            recordCreationDto.Image_8 = fileNames.Count >= 8 ? fileNames[7] : null;
-            recordCreationDto.Image_9 = fileNames.Count >= 9 ? fileNames[8] : null;
+            recordCreationDto.Images = JsonSerializer.Serialize(fileNames);
 
             var publishResult = await HttpRequest.PostAsync(HttpRequestUrls.record, recordCreationDto);
             if (publishResult != null) 
