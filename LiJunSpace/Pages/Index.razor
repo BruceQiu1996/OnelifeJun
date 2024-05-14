@@ -1,23 +1,59 @@
-﻿@page "/"
+﻿@page "/records/{Page:int}"
 @inherits LiJunSpace.ViewModels.IndexComponentViewModel;
 
 <PageTitle>Index</PageTitle>
-
-<MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" OnClick="NewRecord" />
+<MudOverlay @bind-Visible="IsDialogVisible" DarkBackground="true" AutoClose="true">
+    <div style="display: flex; justify-content: center;">
+        <MudImage Style="width:90%;margin:0 auto" Src="@CurrentImage" alt="Enlarged Image" ObjectFit="ObjectFit.ScaleDown" />
+    </div>
+</MudOverlay>
+<div style="display: flex">
+    <MudButton HtmlTag="label"
+               Style="margin-left:auto;margin-right:10px;margin-top:10px"
+               Variant="Variant.Filled"
+               OnClick="NewRecord"
+               Color="Color.Primary"
+               StartIcon="@Icons.Material.Filled.Edit">
+        发布
+    </MudButton>
+</div>
 @foreach (var record in Records)
 {
     <MudCard Style="margin:10px">
-        @if (record.Images.Count >= 1)
+        <MudCardHeader>
+            <CardHeaderAvatar>
+                <MudAvatar>
+                    <MudImage Src="@record.publisherAvatar"></MudImage>
+                </MudAvatar>
+            </CardHeaderAvatar>
+            <CardHeaderContent>
+                <MudText Typo="Typo.body1">@record.PublisherDisplayName</MudText>
+                <MudText Typo="Typo.body2" Style="@($"color:{Colors.Grey.Lighten1};")">@record.PublishTime.ToString("yyyy-MM-dd HH:mm:ss")</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        @if (record.Images.Count > 1)
         {
-            <MudCardMedia Image="@record.Images.First()" Height="200" />
+            <MudCarousel Class="mud-width-full" Style="height:200px;" ShowBullets="false"
+                         EnableSwipeGesture="true" AutoCycle="true" TData="object">
+                @foreach (var image in record.Images)
+                {
+                    <MudCarouselItem Transition="Transition.Slide">
+                        <MudCardMedia onclick="@(()=>{OpenImageDialog(image);})" Image="@image" Height="200" />
+                    </MudCarouselItem>
+                }
+            </MudCarousel>
         }
+
+        @if (record.Images.Count == 1)
+        {
+            <MudCardMedia onclick="@(()=>{OpenImageDialog(record.Images[0]);})" Image="@record.Images[0]" Height="200" />
+        }
+
         <MudCardContent>
-            <MudText Typo="Typo.h5">@record.Title</MudText>
+            <MudText Typo="Typo.body1" Style="font-weight: bold;">@record.Title</MudText>
             <MudText Typo="Typo.body2">@record.Content</MudText>
         </MudCardContent>
-        <MudCardActions>
-            <MudButton Variant="Variant.Text" Color="Color.Primary">Share</MudButton>
-            <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
-        </MudCardActions>
     </MudCard>
 }
+
+<MudPagination @ref="Pagination" Color="Color.Primary" Count="@PageCount" Style="margin:10px" SelectedChanged="OnSelectPageAsync" />

@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@using LiJunSpace.Helpers
+@inherits LayoutComponentBase
 
 <MudThemeProvider Theme="MyCustomTheme" />
 <MudDialogProvider />
@@ -7,7 +8,8 @@
 <MudLayout>
     <MudAppBar>
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        丽君球球的情侣空间
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" aria-label="delete" Color="Color.Inherit" OnClick="GoBack"></MudIconButton>
+        丽君❤球球的情侣空间
     </MudAppBar>
     <MudDrawer @bind-Open="@_drawerOpen">
         <NavMenu />
@@ -16,6 +18,7 @@
         @Body
     </MudMainContent>
 </MudLayout>
+@inject IJSRuntime JSRuntime
 @code {
     MudTheme MyCustomTheme = new MudTheme()
         {
@@ -38,11 +41,25 @@
         };
 }
 
+@inject HttpRequest Httprequest;
+@inject NavigationManager NavigationManager;
 @code {
+    protected override void OnInitialized()
+    {
+        Httprequest.ExcuteWhileUnauthorized += () =>
+        {
+            NavigationManager.NavigateTo("/login", false, true);
+        };
+    }
     bool _drawerOpen = true;
 
     void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
+    }
+
+    private void GoBack()
+    {
+        JSRuntime.InvokeVoidAsync("window.history.back");
     }
 }

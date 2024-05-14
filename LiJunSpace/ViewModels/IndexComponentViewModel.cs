@@ -2,6 +2,7 @@
 using LiJunSpace.Helpers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using MudBlazor;
 using System.Text.Json;
 
 namespace LiJunSpace.ViewModels
@@ -16,15 +17,48 @@ namespace LiJunSpace.ViewModels
         IJSRuntime JSRuntime { get; set; }
         public List<RecordDto> Records { get; set; } = new List<RecordDto>();
         public int PageCount { get; set; }
+        public bool IsDialogVisible { get; set; } = false;
+        public string CurrentImage { get; set; }
+        [Parameter]
+        public int Page { get; set; }
+        public MudPagination Pagination { get; set; }
+
+        public void OpenImageDialog(string image)
+        {
+            CurrentImage = image;
+            IsDialogVisible = true;
+            StateHasChanged();
+        }
+
         public void NewRecord()
         {
-            Navigation.NavigateTo("/newRecord", forceLoad: false, replace: true);
+            Navigation.NavigateTo("/newRecord", forceLoad: false, replace: false);
         }
 
         protected async override Task OnInitializedAsync()
         {
+            await QueryRecordsByPageAsync(Page);
+        }
+
+        protected async override Task OnParametersSetAsync()
+        {
+            await QueryRecordsByPageAsync(Page);
+            if (Pagination != null)
+            {
+                Pagination.Selected = Page;
+            }
+        }
+
+        public async Task OnSelectPageAsync(int page)
+        {
+            Navigation.NavigateTo($"/records/{page}", forceLoad: false, replace: false);
+        }
+
+        private async Task QueryRecordsByPageAsync(int page) 
+        {
             Records.Clear();
-            var resp = await HttpRequest.GetAsync($"{HttpRequestUrls.record}/1");
+            IsDialogVisible = false;
+            var resp = await HttpRequest.GetAsync($"{HttpRequestUrls.record}/{page}");
             if (resp != null)
             {
                 var result = JsonSerializer
@@ -44,7 +78,14 @@ namespace LiJunSpace.ViewModels
                     {
                         record.Images[i] = $"{Program.APIEndPoint}/api/record/images/{record.Images[i]}";
                     }
+
+                    record.publisherAvatar = $"{Program.APIEndPoint}/api/avatars/{record.publisherAvatar}";
+                    if (!string.IsNullOrEmpty(record.Content))
+                    {
+                        record.Content = record.Content.Length > 50 ? record.Content.Substring(50) : record.Content;
+                    }
                 });
+
                 StateHasChanged();
             }
         }

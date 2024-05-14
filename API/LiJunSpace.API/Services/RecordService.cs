@@ -53,12 +53,12 @@ namespace LiJunSpace.API.Services
         public async Task<ServiceResult> CreateNewRecordAsync(RecordCreationDto recordCreationDto, string userId)
         {
             var entity = recordCreationDto.ToRecordEntity(userId);
-            if (!string.IsNullOrEmpty(entity.Images)) 
+            if (!string.IsNullOrEmpty(entity.Images))
             {
                 var imageItems = JsonSerializer.Deserialize<IEnumerable<string>>(entity.Images);
-                foreach (var item in imageItems) 
+                foreach (var item in imageItems)
                 {
-                    var path = Path.Combine(_configuration.GetSection("FileStorage:RecordImagesLocation").Value!, $"user-{userId}",item);
+                    var path = Path.Combine(_configuration.GetSection("FileStorage:RecordImagesLocation").Value!, $"user-{userId}", item);
                     if (!File.Exists(path))
                         throw new InvalidOperationException("Can't find Image Location");
                 }
@@ -80,21 +80,21 @@ namespace LiJunSpace.API.Services
             }
 
             var allCount = await query.CountAsync();
-            if (recordQueryDto.TimeDesc)
-            {
-                query.Skip(10 * (recordQueryDto.Page - 1)).Take(10).OrderByDescending(x => x.PublishTime);
-            }
-            else
-            {
-                query.Skip(10 * (recordQueryDto.Page - 1)).Take(10).OrderBy(x => x.PublishTime);
-            }
 
             RecordQueryResultDto result = new RecordQueryResultDto();
-            var datas = await query.Include(x => x.Account).ToListAsync();
+            var datas = await query
+                .Include(x => x.Account).OrderByDescending(x => x.PublishTime).Skip(10 * (recordQueryDto.Page - 1)).Take(10).ToListAsync();
             List<RecordDto> records = new List<RecordDto>();
             foreach (var item in datas)
             {
                 var dto = item.ToDto();
+                if (!string.IsNullOrEmpty(item.Images))
+                {
+                    JsonSerializer.Deserialize<List<string>>(item.Images).ForEach(x =>
+                    {
+                        dto.Images.Add($"user-{dto.PublisherId}/{x}");
+                    });
+                }
                 dto.publisherAvatar = item.Account.Avatar;
                 if (string.IsNullOrEmpty(dto.publisherAvatar))
                 {

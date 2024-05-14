@@ -19,6 +19,8 @@ namespace LiJunSpace.ViewModels
 
         [Inject]
         public HttpRequest HttpRequest { get; set; }
+        [Inject]
+        public NavigationManager NavigationManager { get; set; }
 
         public List<UploadImageItem> ImageList = new();
 
@@ -107,6 +109,7 @@ namespace LiJunSpace.ViewModels
             if (publishResult != null) 
             {
                 //发布成功
+                NavigationManager.NavigateTo("/");
             }
             else 
             {

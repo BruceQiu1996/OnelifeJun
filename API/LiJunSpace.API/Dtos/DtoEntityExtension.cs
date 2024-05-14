@@ -44,7 +44,7 @@ namespace LiJunSpace.API.Dtos
                 PublisherId = record.Account.Id,
                 PublisherDisplayName = record.Account.DisplayName,
                 PublishTime = record.PublishTime,
-                Images = string.IsNullOrEmpty(record.Images) ? null : JsonSerializer.Deserialize<List<string>>(record.Images),
+                //Images = string.IsNullOrEmpty(record.Images) ? null : JsonSerializer.Deserialize<List<string>>(record.Images),
             };
 
             return dto;
