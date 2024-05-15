@@ -2,11 +2,6 @@
 @inherits LiJunSpace.ViewModels.IndexComponentViewModel;
 
 <PageTitle>Index</PageTitle>
-<MudOverlay @bind-Visible="IsDialogVisible" DarkBackground="true" AutoClose="true">
-    <div style="display: flex; justify-content: center;">
-        <MudImage Style="width:90%;margin:0 auto" Src="@CurrentImage" alt="Enlarged Image" ObjectFit="ObjectFit.ScaleDown" />
-    </div>
-</MudOverlay>
 <div style="display: flex">
     <MudButton HtmlTag="label"
                Style="margin-left:auto;margin-right:10px;margin-top:10px"
@@ -19,11 +14,11 @@
 </div>
 @foreach (var record in Records)
 {
-    <MudCard Style="margin:10px">
+    <MudCard Style="margin:10px" onclick="@(()=>{OpenRecordDetail(record);})">
         <MudCardHeader>
             <CardHeaderAvatar>
                 <MudAvatar>
-                    <MudImage Src="@record.publisherAvatar"></MudImage>
+                    <MudImage Src='@($"{Program.APIEndPoint}/api/avatars/{record.PublisherAvatar}")'></MudImage>
                 </MudAvatar>
             </CardHeaderAvatar>
             <CardHeaderContent>
@@ -38,7 +33,7 @@
                 @foreach (var image in record.Images)
                 {
                     <MudCarouselItem Transition="Transition.Slide">
-                        <MudCardMedia onclick="@(()=>{OpenImageDialog(image);})" Image="@image" Height="200" />
+                        <MudImage Style="width:90%;margin:0 auto" Src='@($"{Program.APIEndPoint}/api/record/images/{image}")' alt="Enlarged Image" ObjectFit="ObjectFit.ScaleDown" />
                     </MudCarouselItem>
                 }
             </MudCarousel>
@@ -46,7 +41,7 @@
 
         @if (record.Images.Count == 1)
         {
-            <MudCardMedia onclick="@(()=>{OpenImageDialog(record.Images[0]);})" Image="@record.Images[0]" Height="200" />
+            <MudCardMedia onclick="@(()=>{OpenImageDialog(record.Images[0]);})" Image='@($"{Program.APIEndPoint}/api/record/images/{record.Images[0]}")' Height="200" />
         }
 
         <MudCardContent>

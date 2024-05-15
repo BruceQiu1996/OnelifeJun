@@ -12,7 +12,7 @@
         public string? Content { get; set; }
         public string PublisherId { get; set; }
         public string PublisherDisplayName { get; set; }
-        public string publisherAvatar { get; set; }
+        public string PublisherAvatar { get; set; }
         public DateTime PublishTime { get; set; }
         public List<string> Images { get; set; } = new List<string>();
     }

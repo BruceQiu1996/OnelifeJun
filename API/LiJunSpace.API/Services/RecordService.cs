@@ -87,7 +87,7 @@ namespace LiJunSpace.API.Services
             List<RecordDto> records = new List<RecordDto>();
             foreach (var item in datas)
             {
-                var dto = item.ToDto();
+                var dto = item.ToDto(true);
                 if (!string.IsNullOrEmpty(item.Images))
                 {
                     JsonSerializer.Deserialize<List<string>>(item.Images).ForEach(x =>
@@ -95,10 +95,10 @@ namespace LiJunSpace.API.Services
                         dto.Images.Add($"user-{dto.PublisherId}/{x}");
                     });
                 }
-                dto.publisherAvatar = item.Account.Avatar;
-                if (string.IsNullOrEmpty(dto.publisherAvatar))
+                dto.PublisherAvatar = item.Account.Avatar;
+                if (string.IsNullOrEmpty(dto.PublisherAvatar))
                 {
-                    dto.publisherAvatar = item.Account.Sex ? "default1.jpg" : "default0.jpg";
+                    dto.PublisherAvatar = item.Account.Sex ? "default1.jpg" : "default0.jpg";
                 }
 
                 records.Add(dto);
@@ -107,6 +107,30 @@ namespace LiJunSpace.API.Services
             result.AllCount = allCount;
 
             return new ServiceResult<RecordQueryResultDto>(result);
+        }
+
+        public async Task<ServiceResult<RecordDto>> GetRecordAsync(string recordId)
+        {
+            var entity = await _junRecordDbContext.Records.Include(x=>x.Account)
+                .FirstOrDefaultAsync(x => x.Id == recordId);
+            if (entity == null)
+                return new ServiceResult<RecordDto>(HttpStatusCode.NotFound,"记录数据异常");
+
+            var dto = entity.ToDto(false);
+            if (!string.IsNullOrEmpty(entity.Images))
+            {
+                JsonSerializer.Deserialize<List<string>>(entity.Images).ForEach(x =>
+                {
+                    dto.Images.Add($"user-{dto.PublisherId}/{x}");
+                });
+            }
+            dto.PublisherAvatar = entity.Account.Avatar;
+            if (string.IsNullOrEmpty(dto.PublisherAvatar))
+            {
+                dto.PublisherAvatar = entity.Account.Sex ? "default1.jpg" : "default0.jpg";
+            }
+
+            return new ServiceResult<RecordDto>(dto);
         }
     }
 }

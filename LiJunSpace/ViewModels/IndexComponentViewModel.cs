@@ -54,7 +54,7 @@ namespace LiJunSpace.ViewModels
             Navigation.NavigateTo($"/records/{page}", forceLoad: false, replace: false);
         }
 
-        private async Task QueryRecordsByPageAsync(int page) 
+        private async Task QueryRecordsByPageAsync(int page)
         {
             Records.Clear();
             IsDialogVisible = false;
@@ -72,22 +72,13 @@ namespace LiJunSpace.ViewModels
                 if (result.Records != null)
                     Records = result.Records;
 
-                Records.ForEach(record =>
-                {
-                    for (int i = 0; i < record.Images.Count; i++)
-                    {
-                        record.Images[i] = $"{Program.APIEndPoint}/api/record/images/{record.Images[i]}";
-                    }
-
-                    record.publisherAvatar = $"{Program.APIEndPoint}/api/avatars/{record.publisherAvatar}";
-                    if (!string.IsNullOrEmpty(record.Content))
-                    {
-                        record.Content = record.Content.Length > 50 ? record.Content.Substring(50) : record.Content;
-                    }
-                });
-
                 StateHasChanged();
             }
+        }
+
+        public void OpenRecordDetail(RecordDto record)
+        {
+            Navigation.NavigateTo($"/records/detail/{record.Id}", false);
         }
     }
 }

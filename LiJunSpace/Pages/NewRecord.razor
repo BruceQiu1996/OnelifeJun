@@ -44,7 +44,7 @@
         {
             @foreach (var file in ImageList)
             {
-                <MudItem Class="pa-3">
+                <MudItem Class="pa-4">
                     <MudImage ObjectFit="ObjectFit.Fill"
                               onclick="@(()=>{OpenImageDrawer(Anchor.Bottom,file);})"
                               Width="96" Height="96" Src="@file.File" Alt="@file.Name" Elevation="25" Class="rounded-lg" />

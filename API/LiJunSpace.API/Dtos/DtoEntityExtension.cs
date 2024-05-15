@@ -34,13 +34,13 @@ namespace LiJunSpace.API.Dtos
             };
         }
 
-        public static RecordDto ToDto(this Record record)
+        public static RecordDto ToDto(this Record record, bool brief = false)
         {
             var dto = new RecordDto()
             {
                 Id = record.Id,
                 Title = record.Title,
-                Content = record.Content,
+                Content = string.IsNullOrEmpty(record.Content) ? null : (brief ? (record.Content.Length > 50 ? record.Content.Substring(50) : record.Content) : record.Content),
                 PublisherId = record.Account.Id,
                 PublisherDisplayName = record.Account.DisplayName,
                 PublishTime = record.PublishTime,

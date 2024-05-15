@@ -74,5 +74,22 @@ namespace LiJunSpace.API.Controllers
                 return Problem();
             }
         }
+
+        [Authorize]
+        [HttpGet("detail/{id}")]
+        public async Task<ActionResult> GetDetail(string id)
+        {
+            try
+            {
+                var result = await _recordService.GetRecordAsync(id);
+
+                return result.ToActionResult();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                return Problem();
+            }
+        }
     }
 }
