@@ -9,9 +9,10 @@
         <CardHeaderContent>
             <MudText Typo="Typo.body1">@Profile.DisplayName</MudText>
             <MudText Typo="Typo.overline">用户名：@Profile.UserName</MudText>
+            <MudText Typo="Typo.overline">@(Profile.Sex ? "男" : "女")</MudText>
         </CardHeaderContent>
         <CardHeaderActions>
-            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Default" />
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="EditProfile" Color="Color.Default" />
         </CardHeaderActions>
     </MudCardHeader>
     <MudCardContent>

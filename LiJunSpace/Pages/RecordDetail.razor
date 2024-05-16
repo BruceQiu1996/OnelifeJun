@@ -26,9 +26,14 @@
                 <MudText Typo="Typo.body1">@Record.PublisherDisplayName</MudText>
                 <MudText Typo="Typo.body2" Style="@($"color:{Colors.Grey.Lighten1};")">@Record.PublishTime.ToString("yyyy-MM-dd HH:mm:ss")</MudText>
             </CardHeaderContent>
+
             <CardHeaderActions>
-                <MudIconButton Icon="@Icons.Material.Filled.MoreHoriz" Color="Color.Default" OnClick="OpenRecordDrawer" />
+                @if (CanEdit)
+                {
+                    <MudIconButton Icon="@Icons.Material.Filled.MoreHoriz" Color="Color.Default" OnClick="OpenRecordDrawer" />
+                }
             </CardHeaderActions>
+
         </MudCardHeader>
 
         <MudCardContent>

@@ -12,7 +12,7 @@ namespace LiJunSpace.API.Controllers
     {
         private readonly AccountService _accountService;
         private readonly ILogger<AccountController> _logger;
-        public AccountController(AccountService accountService,ILogger<AccountController> logger)
+        public AccountController(AccountService accountService, ILogger<AccountController> logger)
         {
             _accountService = accountService;
             _logger = logger;
@@ -20,7 +20,7 @@ namespace LiJunSpace.API.Controllers
 
         [Route("login")]
         [HttpPost]
-        public async Task<ActionResult> LoginAsync(UserLoginDto userLoginDto) 
+        public async Task<ActionResult> LoginAsync(UserLoginDto userLoginDto)
         {
             try
             {
@@ -28,7 +28,7 @@ namespace LiJunSpace.API.Controllers
 
                 return result.ToActionResult();
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 _logger.LogError(ex.ToString());
                 return Problem();
@@ -43,6 +43,23 @@ namespace LiJunSpace.API.Controllers
             try
             {
                 var result = await _accountService.ProfileAsync(HttpContext.User.Identity!.Name!);
+
+                return result.ToActionResult();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                return Problem();
+            }
+        }
+
+        [HttpPost("edit")]
+        [Authorize]
+        public async Task<ActionResult> EditProfileAsync(UserProfileUpdateDto userProfileUpdateDto)
+        {
+            try
+            {
+                var result = await _accountService.UpdateProfileAsync(userProfileUpdateDto, HttpContext.User.Identity!.Name!);
 
                 return result.ToActionResult();
             }

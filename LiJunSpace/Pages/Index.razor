@@ -33,7 +33,7 @@
                 @foreach (var image in record.Images)
                 {
                     <MudCarouselItem Transition="Transition.Slide">
-                        <MudImage Style="width:90%;margin:0 auto" Src='@($"{Program.APIEndPoint}/api/record/images/{image}")' alt="Enlarged Image" ObjectFit="ObjectFit.ScaleDown" />
+                        <MudImage Style="width:90%;margin:0 auto" Src='@($"{Program.APIEndPoint}/api/record/images/{image}")' alt="Enlarged Image" ObjectFit="ObjectFit.Contain" />
                     </MudCarouselItem>
                 }
             </MudCarousel>

@@ -26,7 +26,7 @@ namespace LiJunSpace.ViewModels
 
         public async Task UploadFilesAsync(IReadOnlyList<IBrowserFile> files)
         {
-            if (ImageList.Count >= 9)
+            if (ImageList.Count + files.Count > 9)
             {
                 Snackbar.Add("最多上传9张图片", Severity.Info);
                 return;
@@ -106,12 +106,12 @@ namespace LiJunSpace.ViewModels
             recordCreationDto.Images = JsonSerializer.Serialize(fileNames);
 
             var publishResult = await HttpRequest.PostAsync(HttpRequestUrls.record, recordCreationDto);
-            if (publishResult != null) 
+            if (publishResult != null)
             {
                 //发布成功
                 NavigationManager.NavigateTo("/");
             }
-            else 
+            else
             {
                 Snackbar.Add("发布失败", Severity.Error);
                 return;

@@ -68,6 +68,29 @@ namespace LiJunSpace.API.Services
             return new ServiceResult<UserProfileDto>(user.ToUserProfileDto());
         }
 
+        public async Task<ServiceResult> UpdateProfileAsync(UserProfileUpdateDto userProfileUpdateDto, string userId)
+        {
+            var user = await _junRecordDbContext.Accounts.FirstOrDefaultAsync(x => x.Id == userId);
+            if (user == null)
+                return new ServiceResult(HttpStatusCode.BadRequest, "用户异常");
+
+            if (string.IsNullOrEmpty(userProfileUpdateDto.DisplayName))
+            {
+                return new ServiceResult(HttpStatusCode.BadRequest, "数据异常");
+            }
+
+            user.DisplayName = userProfileUpdateDto.DisplayName;
+            user.Signature = userProfileUpdateDto.Signature;
+            user.Sex = userProfileUpdateDto.Sex;
+            user.Birthday = DateOnly.FromDateTime(userProfileUpdateDto.Birthday);
+
+            _junRecordDbContext.Update(user);
+
+            await _junRecordDbContext.SaveChangesAsync();
+
+            return new ServiceResult();
+        }
+
         public string CreateToken(Account user)
         {
             var claims = new[]

@@ -11,6 +11,8 @@ namespace LiJunSpace.ViewModels
         public UserProfileDto Profile { get; set; }
         [Inject]
         HttpRequest HttpRequest { get; set; }
+        [Inject]
+        NavigationManager NavigationManager { get; set; }
         protected override async Task OnInitializedAsync()
         {
             Profile = new UserProfileDto();
@@ -36,6 +38,11 @@ namespace LiJunSpace.ViewModels
             Open = true;
             Width = "100%";
             Height = "100px";
+        }
+
+        public void EditProfile() 
+        {
+            NavigationManager.NavigateTo("/profile/edit", false);
         }
     }
 }

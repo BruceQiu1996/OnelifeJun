@@ -5,6 +5,7 @@ using LiJunSpace.Common.Dtos.Record;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Text.Json;
+using Z.EntityFramework.Plus;
 
 namespace LiJunSpace.API.Services
 {
@@ -111,10 +112,10 @@ namespace LiJunSpace.API.Services
 
         public async Task<ServiceResult<RecordDto>> GetRecordAsync(string recordId)
         {
-            var entity = await _junRecordDbContext.Records.Include(x=>x.Account)
+            var entity = await _junRecordDbContext.Records.Include(x => x.Account)
                 .FirstOrDefaultAsync(x => x.Id == recordId);
             if (entity == null)
-                return new ServiceResult<RecordDto>(HttpStatusCode.NotFound,"记录数据异常");
+                return new ServiceResult<RecordDto>(HttpStatusCode.NotFound, "记录数据异常");
 
             var dto = entity.ToDto(false);
             if (!string.IsNullOrEmpty(entity.Images))
@@ -131,6 +132,57 @@ namespace LiJunSpace.API.Services
             }
 
             return new ServiceResult<RecordDto>(dto);
+        }
+
+        public async Task<ServiceResult> EditRecordAsync(RecordUpdateDto recordUpdateDto, string userId)
+        {
+            var entity = await _junRecordDbContext.Records
+                .FirstOrDefaultAsync(x => x.Id == recordUpdateDto.Id && x.Publisher == userId);
+            if (entity == null)
+            {
+                return new ServiceResult(HttpStatusCode.NotFound, "数据异常");
+            }
+
+            if (!string.IsNullOrEmpty(recordUpdateDto.Images))
+            {
+                var imageItems = JsonSerializer.Deserialize<List<string>>(recordUpdateDto.Images);
+                for (var i = 0; i < imageItems.Count; i++)
+                {
+                    imageItems[i] = imageItems[i].Replace($"user-{userId}/", string.Empty);
+                }
+
+                foreach (var item in imageItems)
+                {
+                    var path = Path.Combine(_configuration.GetSection("FileStorage:RecordImagesLocation").Value!, $"user-{userId}", item);
+                    if (!File.Exists(path))
+                        throw new InvalidOperationException("Can't find Image Location");
+                }
+
+                recordUpdateDto.Images = JsonSerializer.Serialize(imageItems);
+            }
+
+            entity.Title = recordUpdateDto.Title;
+            entity.Content = recordUpdateDto.Content;
+            entity.Images = recordUpdateDto.Images;
+            _junRecordDbContext.Records.Update(entity);
+            await _junRecordDbContext.SaveChangesAsync();
+
+            return new ServiceResult();
+        }
+
+        public async Task<ServiceResult> DeleteRecordAsync(string recordId, string userId)
+        {
+            var entity = await _junRecordDbContext.Records
+                .FirstOrDefaultAsync(x => x.Id == recordId && x.Publisher == userId);
+            if (entity == null)
+            {
+                return new ServiceResult(HttpStatusCode.NotFound, "数据异常");
+            }
+            
+            _junRecordDbContext.Records.Remove(entity);
+            await _junRecordDbContext.SaveChangesAsync();
+
+            return new ServiceResult();
         }
     }
 }

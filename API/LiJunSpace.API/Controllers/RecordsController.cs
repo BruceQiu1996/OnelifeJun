@@ -91,5 +91,39 @@ namespace LiJunSpace.API.Controllers
                 return Problem();
             }
         }
+
+        [Authorize]
+        [HttpPost("edit")]
+        public async Task<ActionResult> Edit(RecordUpdateDto recordUpdateDto)
+        {
+            try
+            {
+                var result = await _recordService.EditRecordAsync(recordUpdateDto, HttpContext.User.Identity!.Name!);
+
+                return result.ToActionResult();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                return Problem();
+            }
+        }
+
+        [Authorize]
+        [HttpGet("delete/{recordId}")]
+        public async Task<ActionResult> Delete(string recordId)
+        {
+            try
+            {
+                var result = await _recordService.DeleteRecordAsync(recordId, HttpContext.User.Identity!.Name!);
+
+                return result.ToActionResult();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                return Problem();
+            }
+        }
     }
 }
