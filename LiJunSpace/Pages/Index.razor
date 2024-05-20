@@ -18,7 +18,7 @@
         <MudCardHeader>
             <CardHeaderAvatar>
                 <MudAvatar>
-                    <MudImage Src='@($"{Program.APIEndPoint}/api/avatars/{record.PublisherAvatar}")'></MudImage>
+                    <MudImage onclick="@(()=>{OpenUserDetail(record.PublisherId);})" Src='@($"{Program.APIEndPoint}/api/avatars/{record.PublisherAvatar}")'></MudImage>
                 </MudAvatar>
             </CardHeaderAvatar>
             <CardHeaderContent>

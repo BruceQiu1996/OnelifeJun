@@ -1,19 +1,40 @@
-﻿@page "/profile"
+﻿@page "/profile/{Id}"
 @inherits LiJunSpace.ViewModels.ProfileComponentViewModel;
 
+<MudOverlay @bind-Visible="IsDialogVisible" DarkBackground="true" AutoClose="true">
+    <div style="display: flex; justify-content: center;">
+        <MudImage Style="width:90%;margin:0 auto" Src='@Profile.Avatar'
+                  alt="Enlarged Image" ObjectFit="ObjectFit.ScaleDown" />
+    </div>
+</MudOverlay>
 <MudCard Style="margin:10px 10px 10px 10px">
     <MudCardHeader>
         <CardHeaderAvatar>
-            <MudImage Src="@Profile.Avatar" Width="70" onclick="@(()=>{OpenAvatarDrawer(Anchor.Bottom);})"></MudImage>
+            <MudImage Src="@Profile.Avatar" Width="70" ObjectFit="ObjectFit.Cover" onclick="@(()=>{OpenAvatarDrawer(Anchor.Bottom);})"></MudImage>
+
         </CardHeaderAvatar>
         <CardHeaderContent>
             <MudText Typo="Typo.body1">@Profile.DisplayName</MudText>
-            <MudText Typo="Typo.overline">用户名：@Profile.UserName</MudText>
-            <MudText Typo="Typo.overline">@(Profile.Sex ? "男" : "女")</MudText>
+            <MudText Typo="Typo.body1">用户名：@Profile.UserName</MudText>
+            <MudText Typo="Typo.body1">@(Profile.Sex ? "男" : "女")</MudText>
         </CardHeaderContent>
+
         <CardHeaderActions>
-            <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="EditProfile" Color="Color.Default" />
+            @if (CanEdit)
+            {
+                <MudFileUpload Accept=".png, .jpg" T="IBrowserFile" FilesChanged="OnSelectedAvatar">
+                    <ButtonTemplate>
+                        <MudIconButton HtmlTag="label"
+                                       Color="Color.Default"
+                                       Icon="@Icons.Material.Filled.PhotoCamera"
+                                       for="@context.Id">
+                        </MudIconButton>
+                    </ButtonTemplate>
+                </MudFileUpload>
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="EditProfile" Color="Color.Default" />
+            }
         </CardHeaderActions>
+
     </MudCardHeader>
     <MudCardContent>
         <MudText Typo="Typo.body2">
@@ -30,14 +51,9 @@
     <MudCardContent>
         <MudText Typo="Typo.body2">生日: @Profile.Birthday</MudText>
     </MudCardContent>
-    <MudCardActions>
-        <MudIconButton Icon="@Icons.Material.Filled.Favorite" Color="Color.Default" />
-        <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Default" />
-    </MudCardActions>
-    <MudDrawer @bind-Open="@Open" Width="@Width" Height="@Height" Anchor="@Anchor" Elevation="1" Variant="@DrawerVariant.Temporary">
+    <MudDrawer @bind-Open="@Open" Width="100%" Height="40" Anchor="@Anchor" Elevation="1" Variant="@DrawerVariant.Temporary">
         <MudNavMenu>
-            <MudNavLink Match="NavLinkMatch.All">查看大图</MudNavLink>
-            <MudNavLink Match="NavLinkMatch.All">更换头像</MudNavLink>
+            <MudNavLink OnClick="OpenImageDialog">查看大图</MudNavLink>
         </MudNavMenu>
     </MudDrawer>
 </MudCard>

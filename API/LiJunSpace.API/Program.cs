@@ -1,9 +1,11 @@
 using Autofac;
+using Autofac.Core;
 using Autofac.Extensions.DependencyInjection;
 using LiJunSpace.API.Database;
 using LiJunSpace.API.Helpers;
 using LiJunSpace.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;

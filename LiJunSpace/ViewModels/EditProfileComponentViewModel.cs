@@ -30,8 +30,8 @@ namespace LiJunSpace.ViewModels
 
         protected override async Task OnInitializedAsync()
         {
-            await base.OnInitializedAsync();
-            var resp = await HttpRequest.GetAsync(HttpRequestUrls.profile);
+            var userId = await JSRuntime.InvokeAsync<string>("localStorageInterop.getItem", "userId");
+            var resp = await HttpRequest.GetAsync(string.Format(HttpRequestUrls.profile, userId));
             if (resp != null)
             {
                 var profile = JsonSerializer.Deserialize<UserProfileDto>(await resp.Content.ReadAsStringAsync(),

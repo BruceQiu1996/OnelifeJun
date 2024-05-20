@@ -6,15 +6,15 @@
 
 <EditForm OnValidSubmit="OnValidSubmit" Model="@model">
     <DataAnnotationsValidator />
-    <MudGrid Justify="Justify.Center" style="max-width:500px;">
+    <MudGrid Justify="Justify.Center" style="max-width:400px;margin:0 auto;">
         <MudItem xs="12" Style="height:150px;margin-top:20px">
             @if (!string.IsNullOrEmpty(errorMessage))
             {
-                <MudAlert Severity="Severity.Warning" >@errorMessage</MudAlert>
+                <MudAlert Severity="Severity.Warning">@errorMessage</MudAlert>
             }
         </MudItem>
-        <MudItem xs="12">
-            <MudCard>
+        <MudItem xs="12" >
+            <MudCard Style="background-image:url(images/bg.jpg)">
                 <h2>丽君球球的生活记录空间</h2>
                 <MudCardContent>
                     <MudTextField Label="用户名"

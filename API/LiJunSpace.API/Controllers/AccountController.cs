@@ -35,14 +35,14 @@ namespace LiJunSpace.API.Controllers
             }
         }
 
-        [Route("profile")]
+        [Route("profile/{id}")]
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult> ProfileAsync()
+        public async Task<ActionResult> ProfileAsync(string id)
         {
             try
             {
-                var result = await _accountService.ProfileAsync(HttpContext.User.Identity!.Name!);
+                var result = await _accountService.ProfileAsync(id);
 
                 return result.ToActionResult();
             }
@@ -60,6 +60,23 @@ namespace LiJunSpace.API.Controllers
             try
             {
                 var result = await _accountService.UpdateProfileAsync(userProfileUpdateDto, HttpContext.User.Identity!.Name!);
+
+                return result.ToActionResult();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                return Problem();
+            }
+        }
+
+        [Authorize]
+        [HttpPost("upload-avatar")]
+        public async Task<ActionResult> UploadAvatars([FromForm] IFormFile file)
+        {
+            try
+            {
+                var result = await _accountService.UploadAvatarAsync(HttpContext.User.Identity!.Name!, file);
 
                 return result.ToActionResult();
             }

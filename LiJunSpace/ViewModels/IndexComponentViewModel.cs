@@ -54,6 +54,11 @@ namespace LiJunSpace.ViewModels
             Navigation.NavigateTo($"/records/{page}", forceLoad: false, replace: false);
         }
 
+        public void OpenUserDetail(string id) 
+        {
+            Navigation.NavigateTo($"/profile/{id}", forceLoad: false, replace: false);
+        }
+
         private async Task QueryRecordsByPageAsync(int page)
         {
             Records.Clear();

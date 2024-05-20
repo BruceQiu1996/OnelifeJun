@@ -115,5 +115,40 @@ namespace LiJunSpace.API.Services
 
             return token;
         }
+
+        public async Task<ServiceResult<string>> UploadAvatarAsync(string userId, IFormFile file)
+        {
+            var user = await _junRecordDbContext.Accounts.FirstOrDefaultAsync(x => x.Id == userId);
+            if (user == null)
+            {
+                return new ServiceResult<string>(HttpStatusCode.BadRequest, "用户异常");
+            }
+
+            if (file.Length > 1024 * 1024 * 10)
+            {
+                return new ServiceResult<string>(HttpStatusCode.BadRequest, "图片大小不符要求");
+            }
+
+            var fileExtension = Path.GetExtension(file.FileName);
+            var saveFolder = _configuration.GetSection("FileStorage:AvatarImagesLocation").Value!;
+            var fileName = $"{Path.GetRandomFileName()}{fileExtension}";
+            var fullName = Path.Combine(saveFolder, fileName);
+
+            if (!Directory.Exists(saveFolder))
+            {
+                Directory.CreateDirectory(saveFolder);
+            }
+
+            using (var fs = File.Create(fullName))
+            {
+                await file.CopyToAsync(fs);
+                await fs.FlushAsync();
+            }
+            user.Avatar = fileName;
+            _junRecordDbContext.Accounts.Update(user);
+            await _junRecordDbContext.SaveChangesAsync();
+
+            return new ServiceResult<string>(fileName);
+        }
     }
 }
