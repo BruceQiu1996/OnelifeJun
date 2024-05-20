@@ -8,7 +8,6 @@ namespace LiJunSpace
     public class Program
     {
         internal static string APIEndPoint = "http://127.0.0.1:5052";
-        //internal static string APIEndPoint = "http://5io0uk045865.vicp.fun:20672";
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
