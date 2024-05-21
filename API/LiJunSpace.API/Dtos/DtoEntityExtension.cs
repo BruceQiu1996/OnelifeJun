@@ -40,7 +40,7 @@ namespace LiJunSpace.API.Dtos
             {
                 Id = record.Id,
                 Title = record.Title,
-                Content = string.IsNullOrEmpty(record.Content) ? null : (brief ? (record.Content.Length > 50 ? record.Content.Substring(50) : record.Content) : record.Content),
+                Content = string.IsNullOrEmpty(record.Content) ? null : (brief ? (record.Content.Length > 50 ? record.Content.Substring(0,50) : record.Content) : record.Content),
                 PublisherId = record.Account.Id,
                 PublisherDisplayName = record.Account.DisplayName,
                 PublishTime = record.PublishTime,

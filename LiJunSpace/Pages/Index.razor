@@ -26,19 +26,21 @@
                 <MudText Typo="Typo.body2" Style="@($"color:{Colors.Grey.Lighten1};")">@record.PublishTime.ToString("yyyy-MM-dd HH:mm:ss")</MudText>
             </CardHeaderContent>
         </MudCardHeader>
-        @if (record.Images.Count > 1)
-        {
-            <MudCarousel Class="mud-width-full" Style="height:200px;" ShowBullets="false"
-                         EnableSwipeGesture="true" AutoCycle="true" TData="object">
-                @foreach (var image in record.Images)
-                {
-                    <MudCarouselItem Transition="Transition.Slide">
-                        <MudImage Style="width:90%;margin:0 auto" Src='@($"{Program.APIEndPoint}/api/record/images/{image}")' alt="Enlarged Image" ObjectFit="ObjectFit.Contain" />
-                    </MudCarouselItem>
-                }
-            </MudCarousel>
-        }
-
+        <MudCardContent>
+            @if (record.Images.Count > 1)
+            {
+                <MudCarousel ShowBullets="false"
+                             Style="height:200px;margin:0 auto"
+                             EnableSwipeGesture="true" AutoCycle="true" TData="object">
+                    @foreach (var image in record.Images)
+                    {
+                        <MudCarouselItem Transition="Transition.Slide">
+                            <MudCardMedia onclick="@(()=>{OpenImageDialog(record.Images[0]);})" Image='@($"{Program.APIEndPoint}/api/record/images/{image}")' Height="200" />
+                        </MudCarouselItem>
+                    }
+                </MudCarousel>
+            }
+        </MudCardContent>
         @if (record.Images.Count == 1)
         {
             <MudCardMedia onclick="@(()=>{OpenImageDialog(record.Images[0]);})" Image='@($"{Program.APIEndPoint}/api/record/images/{record.Images[0]}")' Height="200" />

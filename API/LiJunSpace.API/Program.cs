@@ -96,6 +96,7 @@ namespace LiJunSpace.API
             builder.Services.AddControllers();
             builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
             var app = builder.Build();
+            app.Urls.Add("http://*:5000");
             app.UseRouting();
             app.UseCors("CorsPolicy");
             app.UseAuthentication();
