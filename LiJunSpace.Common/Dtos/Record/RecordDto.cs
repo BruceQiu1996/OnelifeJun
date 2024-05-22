@@ -5,6 +5,7 @@
         public int AllCount { get; set; }
         public List<RecordDto> Records { get; set; }
     }
+
     public class RecordDto
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();

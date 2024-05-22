@@ -1,5 +1,7 @@
-﻿using LiJunSpace.API.Database.Entities;
+﻿using LiJunSpace.API.Database.Entiies;
+using LiJunSpace.API.Database.Entities;
 using LiJunSpace.Common.Dtos.Account;
+using LiJunSpace.Common.Dtos.Event;
 using LiJunSpace.Common.Dtos.Record;
 using System.Text.Json;
 
@@ -40,7 +42,7 @@ namespace LiJunSpace.API.Dtos
             {
                 Id = record.Id,
                 Title = record.Title,
-                Content = string.IsNullOrEmpty(record.Content) ? null : (brief ? (record.Content.Length > 50 ? record.Content.Substring(0,50) : record.Content) : record.Content),
+                Content = string.IsNullOrEmpty(record.Content) ? null : (brief ? (record.Content.Length > 50 ? record.Content.Substring(0, 50) : record.Content) : record.Content),
                 PublisherId = record.Account.Id,
                 PublisherDisplayName = record.Account.DisplayName,
                 PublishTime = record.PublishTime,
@@ -48,6 +50,35 @@ namespace LiJunSpace.API.Dtos
             };
 
             return dto;
+        }
+
+        public static OurEvent ToEventEntity(this EventCreationDto eventCreationDto)
+        {
+            return new OurEvent()
+            {
+                Time = eventCreationDto.Time,
+                Title = eventCreationDto.Title,
+                CreateTime = eventCreationDto.CreateTime,
+                Desc = eventCreationDto.Desc,
+                UseSeconds = eventCreationDto.UseSeconds,
+                ShowOnMainpage = eventCreationDto.ShowOnMainpage,
+            };
+        }
+
+        public static EventDto ToDto(this OurEvent entity)
+        {
+            return new EventDto()
+            {
+                Id = entity.Id,
+                Time = entity.Time,
+                Title = entity.Title,
+                CreateTime = entity.CreateTime,
+                Desc = entity.Desc,
+                Publisher = entity.Publisher,
+                PublisherDisplayName = entity.Account.DisplayName,
+                UseSeconds = entity.UseSeconds,
+                PublisherAvatar = entity.Account.Avatar
+            };
         }
     }
 }

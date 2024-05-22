@@ -12,5 +12,7 @@
         public const string record_edit = "api/records/edit";
         public const string record_delete = "api/records/delete/{0}";
         public const string record_image_prefix = "api/record/images/{0}/{1}";
+        public const string event_url = "api/events";
+        public const string event_url_main = "api/events/main";
     }
 }

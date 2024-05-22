@@ -1,4 +1,5 @@
-﻿using LiJunSpace.Common.Dtos.Record;
+﻿using LiJunSpace.Common.Dtos.Event;
+using LiJunSpace.Common.Dtos.Record;
 using LiJunSpace.Helpers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -16,6 +17,7 @@ namespace LiJunSpace.ViewModels
         [Inject]
         IJSRuntime JSRuntime { get; set; }
         public List<RecordDto> Records { get; set; } = new List<RecordDto>();
+        public List<EventDto> Events { get; set; } = new List<EventDto>();
         public int PageCount { get; set; }
         public bool IsDialogVisible { get; set; } = false;
         public string CurrentImage { get; set; }
@@ -37,6 +39,7 @@ namespace LiJunSpace.ViewModels
 
         protected async override Task OnInitializedAsync()
         {
+            await QueryTopEvents();
             await QueryRecordsByPageAsync(Page);
         }
 
@@ -57,6 +60,20 @@ namespace LiJunSpace.ViewModels
         public void OpenUserDetail(string id) 
         {
             Navigation.NavigateTo($"/profile/{id}", forceLoad: false, replace: false);
+        }
+
+        private async Task QueryTopEvents() 
+        {
+            Events.Clear();
+            IsDialogVisible = false;
+            var resp = await HttpRequest.GetAsync($"{HttpRequestUrls.event_url_main}");
+            if (resp != null)
+            {
+                Events = JsonSerializer
+                    .Deserialize<List<EventDto>>(await resp.Content.ReadAsStringAsync(), HttpRequest._jsonSerializerOptions);
+
+                StateHasChanged();
+            }
         }
 
         private async Task QueryRecordsByPageAsync(int page)

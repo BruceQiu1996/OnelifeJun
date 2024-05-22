@@ -1,4 +1,5 @@
-﻿using LiJunSpace.API.Database.Entities;
+﻿using LiJunSpace.API.Database.Entiies;
+using LiJunSpace.API.Database.Entities;
 using LiJunSpace.API.Helpers;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,7 @@ namespace LiJunSpace.API.Database
     {
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Record> Records { get; set; }
+        public DbSet<OurEvent> Events { get; set; }
 
         private readonly PasswordHelper _passwordHelper;
         public JunRecordDbContext(DbContextOptions options, PasswordHelper passwordHelper) : base(options)

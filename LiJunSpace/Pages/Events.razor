@@ -1,0 +1,82 @@
+﻿@page "/events"
+@inherits LiJunSpace.ViewModels.EventsComponentViewModel;
+
+<PageTitle>事件</PageTitle>
+<div style="display: flex">
+    <MudButton HtmlTag="label"
+               Style="margin-left:auto;margin-right:10px;margin-top:10px"
+               Variant="Variant.Filled"
+               OnClick="NewEvent"
+               Color="Color.Primary"
+               StartIcon="@Icons.Material.Filled.Edit">
+        创建事件
+    </MudButton>
+</div>
+@foreach (var eventItem in Events)
+{
+    <MudCard Style="margin:10px">
+        <MudCardHeader>
+            <CardHeaderAvatar>
+                <MudAvatar>
+                    <MudImage onclick="@(()=>{OpenUserDetail(eventItem.Publisher);})" Src='@($"{Program.APIEndPoint}/api/avatars/{eventItem.PublisherAvatar}")'></MudImage>
+                </MudAvatar>
+            </CardHeaderAvatar>
+            <CardHeaderContent>
+                <MudText Typo="Typo.body1">@eventItem.PublisherDisplayName</MudText>
+                <MudText Typo="Typo.body2" Style="@($"color:{Colors.Grey.Lighten1};")">@eventItem.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+
+        <MudCardContent>
+            <MudText Typo="Typo.body1" Style="font-weight: bold;">@eventItem.Title</MudText>
+            @if (eventItem.Desc)
+            {
+                <MudText>
+                    距离
+                    <MudElement HtmlTag="a"
+                                Class="ms-1"
+                                Style="color:red;font-weight:bold;"
+                                href="https://github.com/MudBlazor/MudBlazor"
+                                target="blank"
+                                rel="noopener noreferrer">
+                        @eventItem.Time.ToString("yyyy-MM-dd")
+                    </MudElement>
+                    还有
+                    <MudElement HtmlTag="a"
+                                Class="ms-1"
+                                Style="color:red;font-weight:bold;"
+                                href="https://github.com/MudBlazor/MudBlazor"
+                                target="blank"
+                                rel="noopener noreferrer">
+                        @eventItem.Time.Subtract(DateTime.Now).Days
+                    </MudElement>
+                    天
+                </MudText>
+            }
+            else
+            {
+                <MudText>
+                    离
+                    <MudElement HtmlTag="a"
+                                Class="ms-1"
+                                Style="color:red;font-weight:bold;"
+                                href="https://github.com/MudBlazor/MudBlazor"
+                                target="blank"
+                                rel="noopener noreferrer">
+                        @eventItem.Time.ToString("yyyy-MM-dd")
+                    </MudElement>
+                    过去了
+                    <MudElement HtmlTag="a"
+                                Class="ms-1"
+                                Style="color:red;font-weight:bold;"
+                                href="https://github.com/MudBlazor/MudBlazor"
+                                target="blank"
+                                rel="noopener noreferrer">
+                        @DateTime.Now.Subtract(eventItem.Time).Days
+                    </MudElement>
+                    天
+                </MudText>
+            }
+        </MudCardContent>
+    </MudCard>
+}
