@@ -1,0 +1,63 @@
+﻿@using System.ComponentModel
+<div @ontouchstart="OnTouchStart" @ontouchmove="OnTouchMove" @ontouchend="OnTouchEnd"
+     style="display: flex; justify-content: center;">
+    @ChildContent
+</div>
+
+@code {
+    double startX, endX, deltaX;
+
+    EnumGesture gesture = EnumGesture.None;
+    [Parameter]
+    public int Threshold { get; set; } = 60;
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    [Parameter]
+    public Action<EnumGesture>? OnGesture { get; set; }
+
+    private void OnTouchStart(TouchEventArgs e)
+    {
+        startX = e.Touches[0].PageX;
+    }
+
+    private void OnTouchMove(TouchEventArgs e)
+    {
+        endX = e.Touches[0].PageX;
+    }
+
+    private void OnTouchEnd(TouchEventArgs e)
+    {
+        deltaX = endX - startX;
+        if (deltaX > 0 && deltaX > Threshold)
+        {
+            gesture = EnumGesture.Right;
+        }
+        else if (Math.Abs(deltaX) > Threshold)
+        {
+            gesture = EnumGesture.Left;
+        }
+        else
+        {
+            gesture = EnumGesture.None;
+        }
+
+        if (OnGesture != null)
+        {
+            OnGesture.Invoke(gesture);
+        }
+
+        StateHasChanged();
+    }
+
+    public enum EnumGesture
+    {
+        [Description("无手势")]
+        None,
+
+        [Description("向左滑动")]
+        Left,
+
+        [Description("向右滑动")]
+        Right,
+    }
+}

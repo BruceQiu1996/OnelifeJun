@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MudBlazor;
 using System.Text.Json;
+using static LiJunSpace.Shared.GestureComponent;
 
 namespace LiJunSpace.ViewModels
 {
@@ -54,14 +55,14 @@ namespace LiJunSpace.ViewModels
             StateHasChanged();
         }
 
-        public void EditRecordAction() 
+        public void EditRecordAction()
         {
             Navigation.NavigateTo($"/records/edit/{RecordId}", false);
         }
 
-        public async Task DeleteRecordAction() 
+        public async Task DeleteRecordAction()
         {
-            var resp = await HttpRequest.GetAsync(string.Format(HttpRequestUrls.record_delete,RecordId));
+            var resp = await HttpRequest.GetAsync(string.Format(HttpRequestUrls.record_delete, RecordId));
             if (resp == null)
             {
                 Snackbar.Add("删除错误", Severity.Error);
@@ -69,6 +70,38 @@ namespace LiJunSpace.ViewModels
             }
 
             await JSRuntime.InvokeVoidAsync("window.history.back");
+        }
+
+        public void OnGesture(EnumGesture gesture)
+        {
+            if (Record.Images == null || Record.Images?.Count <= 1)
+                return;
+
+            switch (gesture)
+            {
+                case EnumGesture.Left:
+                    var index = Record.Images.IndexOf(CurrentImage);
+                    if (index == -1 || index == Record.Images.Count - 1)
+                    {
+                        return;
+                    }
+
+                    CurrentImage = Record.Images[index + 1];
+                    break;
+                case EnumGesture.Right:
+                    var index1 = Record.Images.IndexOf(CurrentImage);
+                    if (index1 == -1 || index1 == 0)
+                    {
+                        return;
+                    }
+
+                    CurrentImage = Record.Images[index1 - 1];
+                    break;
+                default:
+                    break;
+            }
+
+            StateHasChanged();
         }
     }
 }

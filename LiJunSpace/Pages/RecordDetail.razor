@@ -5,8 +5,11 @@
 {
     <MudOverlay @bind-Visible="IsDialogVisible" DarkBackground="true" AutoClose="true">
         <div style="display: flex; justify-content: center;">
-            <MudImage Style="width:90%;margin:0 auto" Src='@($"{Program.APIEndPoint}/api/record/images/{CurrentImage}")'
-                      alt="Enlarged Image" ObjectFit="ObjectFit.ScaleDown" />
+            <GestureComponent OnGesture="OnGesture">
+                <MudImage Style="width:90%;margin:0 auto" Src='@($"{Program.APIEndPoint}/api/record/images/{CurrentImage}")'
+                          alt="Enlarged Image" ObjectFit="ObjectFit.ScaleDown">
+                </MudImage>
+            </GestureComponent>
         </div>
     </MudOverlay>
     <MudDrawer @bind-Open="@Open" Width="100%" Height="100px" Anchor="Anchor.Bottom" Elevation="1" Variant="@DrawerVariant.Temporary">
@@ -44,7 +47,7 @@
         <MudStack Row="true" Class="d-flex flex-wrap">
             @foreach (var file in Record.Images)
             {
-                <MudItem Class="pa-3">
+                <MudItem Style="margin:5px 0px 5px 15px">
                     <MudImage ObjectFit="ObjectFit.Fill"
                               Width="96" Height="96" Src='@($"{Program.APIEndPoint}/api/record/images/{file}")'
                               onclick="@(()=>{OpenImageDialog(file);})"

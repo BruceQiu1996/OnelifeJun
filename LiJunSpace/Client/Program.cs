@@ -7,7 +7,7 @@ namespace LiJunSpace
 {
     public class Program
     {
-        internal static string APIEndPoint = "http://127.0.0.1:5052";
+        internal static string APIEndPoint;
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -18,7 +18,9 @@ namespace LiJunSpace
                 config.SnackbarConfiguration.VisibleStateDuration = 3000;
             });
             builder.Services.AddSingleton<HttpRequest>();
-            await builder.Build().RunAsync();
+            var host = builder.Build();
+            APIEndPoint = host.Configuration.GetValue<string>("RemoteAPIHost")!;
+            await host.RunAsync();
         }
     }
 }

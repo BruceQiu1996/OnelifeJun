@@ -1,7 +1,11 @@
 ﻿@page "/events"
 @inherits LiJunSpace.ViewModels.EventsComponentViewModel;
+<MudDrawer @bind-Open="@Open" Width="100%" Height="50px" Anchor="Anchor.Bottom" Elevation="1" Variant="@DrawerVariant.Temporary">
+    <MudNavMenu>
+        <MudNavLink OnClick="DeleteEventAction" Style="@($"color:{Colors.Red.Accent1};")">删除事件</MudNavLink>
+    </MudNavMenu>
+</MudDrawer>
 
-<PageTitle>事件</PageTitle>
 <div style="display: flex">
     <MudButton HtmlTag="label"
                Style="margin-left:auto;margin-right:10px;margin-top:10px"
@@ -14,7 +18,7 @@
 </div>
 @foreach (var eventItem in Events)
 {
-    <MudCard Style="margin:10px">
+    <MudCard Style="margin:10px" onclick="@(()=>{OpenAvatar(eventItem);})">
         <MudCardHeader>
             <CardHeaderAvatar>
                 <MudAvatar>

@@ -70,5 +70,23 @@ namespace LiJunSpace.API.Controllers
                 return Problem();
             }
         }
+
+        [Authorize]
+        [HttpGet("delete/{eventId}")]
+        public async Task<ActionResult> DeleteEvent(string eventId)
+        {
+            try
+            {
+                await _eventsService.DeleteEventAsync(eventId, HttpContext.User.Identity!.Name!);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+
+                return Problem();
+            }
+        }
     }
 }

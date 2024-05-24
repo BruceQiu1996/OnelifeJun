@@ -14,5 +14,6 @@
         public const string record_image_prefix = "api/record/images/{0}/{1}";
         public const string event_url = "api/events";
         public const string event_url_main = "api/events/main";
+        public const string event_url_delete = "api/events/delete/{0}";
     }
 }

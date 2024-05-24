@@ -59,5 +59,17 @@ namespace LiJunSpace.API.Services
 
             return eventDtos;
         }
+
+        public async Task DeleteEventAsync(string eventId,string userId)
+        {
+            var @event =
+                await _junRecordDbContext.Events.FirstOrDefaultAsync(x => x.Id == eventId && x.Publisher == userId);
+
+            if (@event != null) 
+            {
+                _junRecordDbContext.Events.Remove(@event);
+                await _junRecordDbContext.SaveChangesAsync();
+            }
+        }
     }
 }

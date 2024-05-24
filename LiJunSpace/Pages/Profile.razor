@@ -7,6 +7,11 @@
                   alt="Enlarged Image" ObjectFit="ObjectFit.ScaleDown" />
     </div>
 </MudOverlay>
+<MudDrawer @bind-Open="@Open" Width="100%" Height="40" Anchor="@Anchor" Elevation="1" Variant="@DrawerVariant.Temporary">
+    <MudNavMenu>
+        <MudNavLink OnClick="OpenImageDialog">查看大图</MudNavLink>
+    </MudNavMenu>
+</MudDrawer>
 <MudCard Style="margin:10px 10px 10px 10px">
     <MudCardHeader>
         <CardHeaderAvatar>
@@ -51,9 +56,4 @@
     <MudCardContent>
         <MudText Typo="Typo.body2">生日: @Profile.Birthday</MudText>
     </MudCardContent>
-    <MudDrawer @bind-Open="@Open" Width="100%" Height="40" Anchor="@Anchor" Elevation="1" Variant="@DrawerVariant.Temporary">
-        <MudNavMenu>
-            <MudNavLink OnClick="OpenImageDialog">查看大图</MudNavLink>
-        </MudNavMenu>
-    </MudDrawer>
 </MudCard>
