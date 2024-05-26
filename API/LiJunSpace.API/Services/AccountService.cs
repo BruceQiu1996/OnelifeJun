@@ -72,6 +72,12 @@ namespace LiJunSpace.API.Services
                 x.CheckInTime.Month == DateTime.Now.Month &&
                 x.CheckInTime.Day == DateTime.Now.Day)) != null;
 
+            var con1 = await _junRecordDbContext.Database
+                .SqlQueryRaw<int>($"SELECT COUNT(1) FROM(SELECT datediff(t.date,date_sub(curdate(),interval t.rownum day)) as dayinterval FROM (SELECT date_format(CheckInTime,'%Y-%m-%d') as date,row_number() over(ORDER BY CheckInTime DESC) as rownum FROM checkinrecords where checker = '{userId}')t)t1 WHERE t1.dayinterval=0;").ToListAsync();
+            var con2 = await _junRecordDbContext.Database
+                .SqlQueryRaw<int>($"SELECT COUNT(1) FROM(SELECT datediff(t.date,date_sub(curdate(),interval t.rownum day)) as dayinterval FROM (SELECT date_format(CheckInTime,'%Y-%m-%d') as date,row_number() over(ORDER BY CheckInTime DESC) as rownum FROM checkinrecords where checker = '{userId}')t)t1 WHERE t1.dayinterval=1;").ToListAsync();
+            dto.ContinueCheckInDays = Math.Max(con1.FirstOrDefault(), con2.FirstOrDefault());
+
             return new ServiceResult<UserProfileDto>(dto);
         }
 

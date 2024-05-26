@@ -65,11 +65,11 @@
             </CardHeaderAvatar>
             <CardHeaderContent>
                 <MudText Typo="Typo.body1">@record.PublisherDisplayName</MudText>
-                <MudText Typo="Typo.body2" Style="@($"color:{Colors.Grey.Lighten1};")">@record.PublishTime.ToString("yyyy-MM-dd HH:mm:ss")</MudText>
-            </CardHeaderContent>
-        </MudCardHeader>
+                    <MudText Typo="Typo.body2" Style="@($"color:{Colors.Grey.Lighten1};")">@record.PublishTime.ToString("yyyy-MM-dd HH:mm:ss")</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
 
-        @if (record.Images.Count > 1)
+            @if (record.Images.Count > 1)
         {
             <MudCardContent>
                 <MudCarousel ShowBullets="false"
@@ -92,9 +92,14 @@
 
         <MudCardContent>
             <MudText Typo="Typo.body1" Style="font-weight: bold;">@record.Title</MudText>
-            <MudText Typo="Typo.body2">@record.Content</MudText>
-        </MudCardContent>
-    </MudCard>
+                <MudText Typo="Typo.body2">@record.Content</MudText>
+            </MudCardContent>
+
+            <MudCardActions>
+                <MudIconButton Variant="Variant.Text" Icon="@Icons.Material.Filled.Message" Color="Color.Primary" />
+                <MudText Typo="Typo.body1">@record.CommentCount</MudText>
+            </MudCardActions>
+        </MudCard>
 }
 
 <MudPagination @ref="Pagination" Color="Color.Primary" Count="@PageCount" Style="margin:10px" SelectedChanged="OnSelectPageAsync" />

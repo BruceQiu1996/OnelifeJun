@@ -13,5 +13,6 @@
         public string? Email { get; set; }
         public bool OpenEmailNotice { get; set; }
         public bool TodayIsCheckIn { get; set; }
+        public int ContinueCheckInDays { get; set; }
     }
 }

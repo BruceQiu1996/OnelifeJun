@@ -38,20 +38,62 @@ namespace LiJunSpace.API.Dtos
             };
         }
 
-        public static RecordDto ToDto(this Record record, bool brief = false)
+        public static RecordDto ToDto(this Record record)
         {
             var dto = new RecordDto()
             {
                 Id = record.Id,
                 Title = record.Title,
-                Content = string.IsNullOrEmpty(record.Content) ? null : (brief ? (record.Content.Length > 50 ? record.Content.Substring(0, 50) : record.Content) : record.Content),
+                Content = string.IsNullOrEmpty(record.Content) ? null : (record.Content.Length > 50 ? record.Content.Substring(0, 50) : record.Content),
                 PublisherId = record.Account.Id,
                 PublisherDisplayName = record.Account.DisplayName,
                 PublishTime = record.PublishTime,
+                CommentCount = record.Comments.Count,
+                PublisherAvatar = string.IsNullOrEmpty(record.Account.Avatar) ? (record.Account.Sex ? "default1.jpg" : "default0.jpg") : record.Account.Avatar
                 //Images = string.IsNullOrEmpty(record.Images) ? null : JsonSerializer.Deserialize<List<string>>(record.Images),
             };
 
             return dto;
+        }
+
+        public static RecordDtoWithComments ToWithCommentsDto(this Record record)
+        {
+            var dto = new RecordDtoWithComments()
+            {
+                Id = record.Id,
+                Title = record.Title,
+                Content = record.Content,
+                PublisherId = record.Account.Id,
+                PublisherDisplayName = record.Account.DisplayName,
+                PublishTime = record.PublishTime,
+                CommentCount = record.Comments.Count,
+                PublisherAvatar = string.IsNullOrEmpty(record.Account.Avatar) ? (record.Account.Sex ? "default1.jpg" : "default0.jpg") : record.Account.Avatar
+                //Images = string.IsNullOrEmpty(record.Images) ? null : JsonSerializer.Deserialize<List<string>>(record.Images),
+            };
+            dto.Comments = record.Comments.OrderByDescending(x => x.PublishTime).Select(x => new CommentDto()
+            {
+                Id = x.Id,
+                Content = x.Content,
+                Publisher = x.Publisher,
+                PublishTime = x.PublishTime,
+                PublisherDisplayName = x.Account.DisplayName,
+                PublisherAvatar = string.IsNullOrEmpty(x.Account.Avatar) ? (x.Account.Sex ? "default1.jpg" : "default0.jpg") : x.Account.Avatar
+            }).ToList();
+
+            return dto;
+        }
+
+        public static CommentDto ToDto(this Comment x)
+        {
+            return new CommentDto()
+            {
+                Id = x.Id,
+                Content = x.Content,
+                Publisher = x.Publisher,
+                PublishTime = x.PublishTime,
+                PublisherDisplayName = x.Account.DisplayName,
+                PublisherAvatar = string.IsNullOrEmpty(x.Account.Avatar) ? (x.Account.Sex ? "default1.jpg" : "default0.jpg") : x.Account.Avatar
+            };
         }
 
         public static OurEvent ToEventEntity(this EventCreationDto eventCreationDto)

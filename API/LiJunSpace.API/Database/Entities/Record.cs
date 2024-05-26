@@ -21,5 +21,6 @@ namespace LiJunSpace.API.Database.Entities
         public DateTime PublishTime { get; set; }
         public string? Images { get; set; }
         public bool IsDeleted { get; set; }
+        public virtual ICollection<Comment> Comments { get; set;}
     }
 }

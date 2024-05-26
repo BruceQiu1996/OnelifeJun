@@ -99,22 +99,19 @@ namespace LiJunSpace.API.Services
 
             RecordQueryResultDto result = new RecordQueryResultDto();
             var datas = await query
-                .Include(x => x.Account).OrderByDescending(x => x.PublishTime).Skip(10 * (recordQueryDto.Page - 1)).Take(10).ToListAsync();
+                .Include(x => x.Account).OrderByDescending(x => x.PublishTime).Skip(10 * (recordQueryDto.Page - 1)).Take(10)
+                .Include(x => x.Comments).ToListAsync();
+
             List<RecordDto> records = new List<RecordDto>();
             foreach (var item in datas)
             {
-                var dto = item.ToDto(true);
+                var dto = item.ToDto();
                 if (!string.IsNullOrEmpty(item.Images))
                 {
                     JsonSerializer.Deserialize<List<string>>(item.Images).ForEach(x =>
                     {
                         dto.Images.Add($"user-{dto.PublisherId}/{x}");
                     });
-                }
-                dto.PublisherAvatar = item.Account.Avatar;
-                if (string.IsNullOrEmpty(dto.PublisherAvatar))
-                {
-                    dto.PublisherAvatar = item.Account.Sex ? "default1.jpg" : "default0.jpg";
                 }
 
                 records.Add(dto);
@@ -125,14 +122,14 @@ namespace LiJunSpace.API.Services
             return new ServiceResult<RecordQueryResultDto>(result);
         }
 
-        public async Task<ServiceResult<RecordDto>> GetRecordAsync(string recordId)
+        public async Task<ServiceResult<RecordDtoWithComments>> GetRecordAsync(string recordId)
         {
-            var entity = await _junRecordDbContext.Records.Include(x => x.Account)
+            var entity = await _junRecordDbContext.Records.Include(x => x.Account).Include(x => x.Comments)
                 .FirstOrDefaultAsync(x => x.Id == recordId);
             if (entity == null)
-                return new ServiceResult<RecordDto>(HttpStatusCode.NotFound, "记录数据异常");
+                return new ServiceResult<RecordDtoWithComments>(HttpStatusCode.NotFound, "记录数据异常");
 
-            var dto = entity.ToDto(false);
+            var dto = entity.ToWithCommentsDto();
             if (!string.IsNullOrEmpty(entity.Images))
             {
                 JsonSerializer.Deserialize<List<string>>(entity.Images).ForEach(x =>
@@ -140,13 +137,8 @@ namespace LiJunSpace.API.Services
                     dto.Images.Add($"user-{dto.PublisherId}/{x}");
                 });
             }
-            dto.PublisherAvatar = entity.Account.Avatar;
-            if (string.IsNullOrEmpty(dto.PublisherAvatar))
-            {
-                dto.PublisherAvatar = entity.Account.Sex ? "default1.jpg" : "default0.jpg";
-            }
 
-            return new ServiceResult<RecordDto>(dto);
+            return new ServiceResult<RecordDtoWithComments>(dto);
         }
 
         public async Task<ServiceResult> EditRecordAsync(RecordUpdateDto recordUpdateDto, string userId)
@@ -193,11 +185,44 @@ namespace LiJunSpace.API.Services
             {
                 return new ServiceResult(HttpStatusCode.NotFound, "数据异常");
             }
-            
+
             _junRecordDbContext.Records.Remove(entity);
             await _junRecordDbContext.SaveChangesAsync();
 
             return new ServiceResult();
+        }
+
+        public async Task<ServiceResult<CommentDto>> CreateNewCommentAsync(CommentCreationDto commentCreationDto, string userId)
+        {
+            var record = await _junRecordDbContext.Records.FirstOrDefaultAsync(x => x.Id == commentCreationDto.RecordId);
+            if (record == null)
+            {
+                return new ServiceResult<CommentDto>(HttpStatusCode.NotFound, "数据异常");
+            }
+
+            var comment = new Comment()
+            {
+                Content = commentCreationDto.Content,
+                Publisher = userId,
+                RecordId = record.Id,
+                PublishTime = DateTime.Now
+            };
+            await _junRecordDbContext.Comments.AddAsync(comment);
+
+            await _junRecordDbContext.SaveChangesAsync();
+            var commentData = await _junRecordDbContext.Comments.Include(x => x.Account).FirstOrDefaultAsync(x => x.Id == comment.Id);
+            var account = await _junRecordDbContext.Accounts.FirstOrDefaultAsync(x => x.OpenEmailNotice && x.Id == record.Publisher);
+            if (account != null)
+            {
+                await _sendEmailChannel.WriteMessageAsync(new List<SendEmailObject>() { new SendEmailObject()
+                {
+                    Target = account.Email,
+                    Content = $"{commentData.Account.DisplayName}评论了你的动态:{commentData.Content}",
+                    Title="你有一个新的评论通知"
+                }});
+            }
+
+            return new ServiceResult<CommentDto>(commentData?.ToDto());
         }
     }
 }

@@ -1,8 +1,11 @@
-﻿using LiJunSpace.Common.Dtos.Record;
+﻿using LiJunSpace.Common.Dtos.Event;
+using LiJunSpace.Common.Dtos.Record;
 using LiJunSpace.Helpers;
+using LiJunSpace.Pages;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MudBlazor;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using static LiJunSpace.Shared.GestureComponent;
 
@@ -14,7 +17,7 @@ namespace LiJunSpace.ViewModels
         public string RecordId { get; set; }
         [Inject]
         public HttpRequest HttpRequest { get; set; }
-        public RecordDto Record { get; set; }
+        public RecordDtoWithComments Record { get; set; }
         public bool IsDialogVisible { get; set; }
         public string CurrentImage { get; set; }
         [Inject]
@@ -24,6 +27,8 @@ namespace LiJunSpace.ViewModels
         [Inject]
         public ISnackbar Snackbar { get; set; }
         public bool CanEdit { get; set; }
+        [MaxLength(250)]
+        public string Content { get; set; }
         protected async override Task OnInitializedAsync()
         {
             if (string.IsNullOrEmpty(RecordId))
@@ -32,7 +37,7 @@ namespace LiJunSpace.ViewModels
             var resp = await HttpRequest.GetAsync(string.Format(HttpRequestUrls.record_detail, RecordId));
             if (resp != null)
             {
-                Record = JsonSerializer.Deserialize<RecordDto>(await resp.Content.ReadAsStringAsync(), HttpRequest._jsonSerializerOptions);
+                Record = JsonSerializer.Deserialize<RecordDtoWithComments>(await resp.Content.ReadAsStringAsync(), HttpRequest._jsonSerializerOptions);
                 StateHasChanged();
             }
             var user = await JSRuntime.InvokeAsync<string>("localStorageInterop.getItem", "userId");
@@ -100,6 +105,30 @@ namespace LiJunSpace.ViewModels
                 default:
                     break;
             }
+
+            StateHasChanged();
+        }
+
+        public async Task PublishNewComment() 
+        {
+            if (string.IsNullOrEmpty(Content))
+                return;
+
+            var resp = await HttpRequest.PostAsync(HttpRequestUrls.record_comment, new CommentCreationDto() 
+            {
+                RecordId = Record.Id,
+                Content = Content
+            });
+            if (resp == null)
+            {
+                Snackbar.Add("发布评论异常", Severity.Error);
+                return;
+            }
+
+            var comment = JsonSerializer
+                    .Deserialize<CommentDto>(await resp.Content.ReadAsStringAsync(), HttpRequest._jsonSerializerOptions);
+            Record.Comments.Insert(0, comment);
+            Content = null;
 
             StateHasChanged();
         }

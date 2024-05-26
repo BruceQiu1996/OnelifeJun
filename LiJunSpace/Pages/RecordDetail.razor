@@ -27,11 +27,11 @@
             </CardHeaderAvatar>
             <CardHeaderContent>
                 <MudText Typo="Typo.body1">@Record.PublisherDisplayName</MudText>
-                <MudText Typo="Typo.body2" Style="@($"color:{Colors.Grey.Lighten1};")">@Record.PublishTime.ToString("yyyy-MM-dd HH:mm:ss")</MudText>
-            </CardHeaderContent>
+                    <MudText Typo="Typo.body2" Style="@($"color:{Colors.Grey.Lighten1};")">@Record.PublishTime.ToString("yyyy-MM-dd HH:mm:ss")</MudText>
+                </CardHeaderContent>
 
-            <CardHeaderActions>
-                @if (CanEdit)
+                <CardHeaderActions>
+                    @if (CanEdit)
                 {
                     <MudIconButton Icon="@Icons.Material.Filled.MoreHoriz" Color="Color.Default" OnClick="OpenRecordDrawer" />
                 }
@@ -41,11 +41,11 @@
 
         <MudCardContent>
             <MudText Typo="Typo.body1" Style="font-weight: bold;">@Record.Title</MudText>
-            <MudText Typo="Typo.body2">@Record.Content</MudText>
-        </MudCardContent>
+                <MudText Typo="Typo.body2">@Record.Content</MudText>
+            </MudCardContent>
 
-        <MudStack Row="true" Class="d-flex flex-wrap">
-            @foreach (var file in Record.Images)
+            <MudStack Row="true" Class="d-flex flex-wrap">
+                @foreach (var file in Record.Images)
             {
                 <MudItem Style="margin:5px 0px 5px 15px">
                     <MudImage ObjectFit="ObjectFit.Fill"
@@ -55,5 +55,48 @@
                 </MudItem>
             }
         </MudStack>
+    </MudCard>
+
+    <MudCard Style="margin:10px">
+        <MudCardContent xs="12">
+            <MudTextField @bind-Value="@Content" For="@(() =>Content)" xs="12" Label="评论" Variant="Variant.Outlined" Clearable="true" Lines="3" />
+            <div style="display: flex">
+                <MudButton HtmlTag="label"
+                           Style="margin-left:auto;margin-top:10px"
+                           Variant="Variant.Filled"
+                           OnClick="PublishNewComment"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.Edit">
+                    发布
+                </MudButton>
+            </div>
+        </MudCardContent>
+        <MudCardContent>
+            <MudText>评论列表(@Record.Comments.Count)</MudText>
+        </MudCardContent>
+        @if (Record.Comments != null && Record.Comments.Count() > 0)
+        {
+            foreach (var comment in Record.Comments)
+            {
+                <MudCard Style="margin:10px">
+                    <MudCardHeader>
+                        <CardHeaderAvatar>
+                            <MudAvatar>
+                                <MudImage Src='@($"{Program.APIEndPoint}/api/avatars/{comment.PublisherAvatar}")'></MudImage>
+                            </MudAvatar>
+                        </CardHeaderAvatar>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.body1">@comment.PublisherDisplayName</MudText>
+                                <MudText Typo="Typo.body2" Style="@($"color:{Colors.Grey.Lighten1};")">@comment.PublishTime.ToString("yyyy-MM-dd HH:mm:ss")</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+
+                        <MudCardContent>
+                            <MudText Typo="Typo.body2">@comment.Content</MudText>
+                        </MudCardContent>
+                    </MudCard>
+            }
+        }
+        <br/>
     </MudCard>
 }

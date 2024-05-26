@@ -62,18 +62,34 @@
     <MudCardContent>
         <MudText Typo="Typo.body2">生日: @Profile.Birthday</MudText>
         </MudCardContent>
+        @if (CanEdit)
+    {
         @if (!@Profile.TodayIsCheckIn)
-    {
-        <MudButton Variant="Variant.Filled"
-                   OnClick="CheckInAsync"
-                   Style="margin:5px 0px 5px 15px"
-                   StartIcon="@Icons.Material.Filled.Check" Color="Color.Primary">签到</MudButton>
-    }
-    else
-    {
-        <MudButton Variant="Variant.Filled"
-                   Style="margin:5px 0px 5px 15px"
-                   Disabled="true"
-                   StartIcon="@Icons.Material.Filled.Circle" Color="Color.Primary">已签到</MudButton>
+        {
+            <MudButton Variant="Variant.Filled"
+                       OnClick="CheckInAsync"
+                       Style="margin:5px 0px 5px 15px"
+                       StartIcon="@Icons.Material.Filled.Check" Color="Color.Primary">签到</MudButton>
+        }
+        else
+        {
+            <MudButton Variant="Variant.Filled"
+                       Style="margin:5px 0px 5px 15px"
+                       Disabled="true"
+                       StartIcon="@Icons.Material.Filled.Circle" Color="Color.Primary">已签到</MudButton>
+        }
+
+        <MudText Typo="Typo.body2" Style="margin:5px 0px 5px 15px">
+            已连续签到
+            <MudElement HtmlTag="a"
+                        Class="ms-1"
+                        Style="color:red;font-weight:bold;"
+                        href="https://github.com/MudBlazor/MudBlazor"
+                        target="blank"
+                        rel="noopener noreferrer">
+                @Profile.ContinueCheckInDays
+            </MudElement>
+            天
+        </MudText>
     }
 </MudCard>

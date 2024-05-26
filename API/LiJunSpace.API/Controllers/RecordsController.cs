@@ -125,5 +125,22 @@ namespace LiJunSpace.API.Controllers
                 return Problem();
             }
         }
+
+        [Authorize]
+        [HttpPost("comment")]
+        public async Task<ActionResult> Comment(CommentCreationDto commentCreationDto)
+        {
+            try
+            {
+                var result = await _recordService.CreateNewCommentAsync(commentCreationDto, HttpContext.User.Identity!.Name!);
+
+                return result.ToActionResult();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                return Problem();
+            }
+        }
     }
 }
