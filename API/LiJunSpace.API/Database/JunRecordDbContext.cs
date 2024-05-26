@@ -10,6 +10,7 @@ namespace LiJunSpace.API.Database
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Record> Records { get; set; }
         public DbSet<OurEvent> Events { get; set; }
+        public DbSet<CheckInRecord> CheckInRecords { get; set; }
 
         private readonly PasswordHelper _passwordHelper;
         public JunRecordDbContext(DbContextOptions options, PasswordHelper passwordHelper) : base(options)

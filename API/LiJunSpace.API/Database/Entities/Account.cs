@@ -23,5 +23,8 @@ namespace LiJunSpace.API.Database.Entities
         public string? Signature { get; set; }
         public bool Sex { get; set; }
         public DateOnly Birthday { get; set; }
+        [MaxLength(500)]
+        public string? Email { get; set; }
+        public bool OpenEmailNotice { get; set; }
     }
 }

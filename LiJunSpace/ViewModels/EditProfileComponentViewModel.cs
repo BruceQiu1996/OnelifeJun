@@ -25,6 +25,9 @@ namespace LiJunSpace.ViewModels
         public string DisplayName { get; set; }
         [MaxLength(50, ErrorMessage = "签名最多50长度")]
         public string? Signature { get; set; }
+        [RegularExpression(@"^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$", ErrorMessage = "邮箱格式不正确")]
+        public string? Email { get; set; }
+        public bool OpenEmailNotice { get; set; }
         public bool Sex { get; set; }
         public DateTime? Birthday { get; set; }
 
@@ -39,6 +42,8 @@ namespace LiJunSpace.ViewModels
 
                 DisplayName = profile.DisplayName;
                 Signature = profile.Signature;
+                Email = profile.Email;
+                OpenEmailNotice = profile.OpenEmailNotice;
                 Birthday = DateTime.Parse(profile.Birthday);
                 Sex = profile.Sex;
                 StateHasChanged();
@@ -64,7 +69,9 @@ namespace LiJunSpace.ViewModels
                 Birthday = Birthday.Value,
                 DisplayName = DisplayName,
                 Signature = Signature,
-                Sex = Sex
+                OpenEmailNotice = OpenEmailNotice,
+                Sex = Sex,
+                Email = Email,
             });
 
             if (resp == null)

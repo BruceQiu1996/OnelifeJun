@@ -1,4 +1,5 @@
-﻿using LiJunSpace.API.Database;
+﻿using LiJunSpace.API.Channels;
+using LiJunSpace.API.Database;
 using LiJunSpace.API.Database.Entities;
 using LiJunSpace.API.Dtos;
 using LiJunSpace.Common.Dtos.Record;
@@ -13,10 +14,13 @@ namespace LiJunSpace.API.Services
     {
         private readonly JunRecordDbContext _junRecordDbContext;
         private readonly IConfiguration _configuration;
-        public RecordService(JunRecordDbContext junRecordDbContext, IConfiguration configuration)
+        private readonly SendEmailChannel _sendEmailChannel;
+
+        public RecordService(JunRecordDbContext junRecordDbContext, IConfiguration configuration, SendEmailChannel sendEmailChannel)
         {
             _junRecordDbContext = junRecordDbContext;
             _configuration = configuration;
+            _sendEmailChannel = sendEmailChannel;
         }
 
         public async Task<ServiceResult<string>> UploadRecordImageAsync(string userId, IFormFile file)
@@ -66,6 +70,17 @@ namespace LiJunSpace.API.Services
             }
             _junRecordDbContext.Records.Add(entity);
             await _junRecordDbContext.SaveChangesAsync();
+
+            var hadImages = string.IsNullOrEmpty(entity.Images) ? "无配图" : "有配图";
+            var objs = (await _junRecordDbContext.Accounts.Where(x => x.OpenEmailNotice
+                && !string.IsNullOrEmpty(x.Email) && x.Id != userId).ToListAsync()).Select(x => new SendEmailObject()
+                {
+                    Title = "有人发布了新的动态",
+                    Content = $"{entity.Title}\n{entity.Content}\n{hadImages}",
+                    Target = x.Email
+                });
+
+            await _sendEmailChannel.WriteMessageAsync(objs);
 
             return new ServiceResult();
         }

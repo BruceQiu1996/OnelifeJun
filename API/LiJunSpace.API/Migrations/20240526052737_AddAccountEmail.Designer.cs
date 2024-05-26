@@ -4,6 +4,7 @@ using LiJunSpace.API.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LiJunSpace.API.Migrations
 {
     [DbContext(typeof(JunRecordDbContext))]
-    partial class JunRecordDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240526052737_AddAccountEmail")]
+    partial class AddAccountEmail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,9 +86,6 @@ namespace LiJunSpace.API.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
-                    b.Property<bool>("OpenEmailNotice")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -116,8 +116,7 @@ namespace LiJunSpace.API.Migrations
                             Birthday = new DateOnly(1994, 1, 12),
                             CreateTime = new DateTime(2024, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DisplayName = "王丽君",
-                            OpenEmailNotice = false,
-                            Password = "4BVQ7QSY1721V5LkErxQUQ==.Tg6Oj+rMrghIRq+6b6bA5Ighc6vhmcP9Ot5IGRqgr2Y=",
+                            Password = "Gyjm6J2tS45OxtWutTdkQA==.zaydGmdksJm9Zj1l4wsZqPeZ8zoO5sCNtzWFSjYNOvM=",
                             Sex = false,
                             UpdateTime = new DateTime(2024, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserName = "wlj"
@@ -128,32 +127,11 @@ namespace LiJunSpace.API.Migrations
                             Birthday = new DateOnly(1995, 8, 24),
                             CreateTime = new DateTime(2024, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DisplayName = "仇伟",
-                            OpenEmailNotice = false,
-                            Password = "fHY6mVWGfkoU9I/vErym7Q==.TGZjE/nLWAdVw0KpeOzpabDTkxM48kFe2otcyl4KLHY=",
+                            Password = "If4e5mBbWxEE2FfccjOkXQ==.L1NzaSKBUdZoHtIQ1kO56/2ah0IiOL7s2GHzRNgdWso=",
                             Sex = true,
                             UpdateTime = new DateTime(2024, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserName = "qw"
                         });
-                });
-
-            modelBuilder.Entity("LiJunSpace.API.Database.Entities.CheckInRecord", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<DateTime>("CheckInTime")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("Checker")
-                        .IsRequired()
-                        .HasColumnType("varchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Checker");
-
-                    b.ToTable("CheckInRecords");
                 });
 
             modelBuilder.Entity("LiJunSpace.API.Database.Entities.Record", b =>
@@ -194,17 +172,6 @@ namespace LiJunSpace.API.Migrations
                     b.HasOne("LiJunSpace.API.Database.Entities.Account", "Account")
                         .WithMany()
                         .HasForeignKey("Publisher")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Account");
-                });
-
-            modelBuilder.Entity("LiJunSpace.API.Database.Entities.CheckInRecord", b =>
-                {
-                    b.HasOne("LiJunSpace.API.Database.Entities.Account", "Account")
-                        .WithMany()
-                        .HasForeignKey("Checker")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

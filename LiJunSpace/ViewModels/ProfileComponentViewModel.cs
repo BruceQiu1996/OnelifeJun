@@ -1,5 +1,6 @@
 ﻿using LiJunSpace.Common.Dtos.Account;
 using LiJunSpace.Helpers;
+using LiJunSpace.Pages;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
@@ -79,6 +80,17 @@ namespace LiJunSpace.ViewModels
             var filename = await resp.Content.ReadAsStringAsync();
             Profile.Avatar = $"{Program.APIEndPoint}/api/avatars/{filename}";
             StateHasChanged();
+        }
+
+        public async Task CheckInAsync()
+        {
+            var resp = await HttpRequest.PostAsync(HttpRequestUrls.account_checkin, null);
+            if (resp != null)
+            {
+                Profile.TodayIsCheckIn = true;
+                Snackbar.Add("今日已签到", Severity.Success);
+                StateHasChanged();
+            }
         }
     }
 }

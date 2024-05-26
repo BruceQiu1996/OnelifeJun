@@ -65,9 +65,22 @@ namespace LiJunSpace.API.Services
             {
                 user.Avatar = user.Sex ? "default1.jpg" : "default0.jpg";
             }
-            return new ServiceResult<UserProfileDto>(user.ToUserProfileDto());
+
+            var dto = user.ToUserProfileDto();
+            dto.TodayIsCheckIn = (await _junRecordDbContext.CheckInRecords.FirstOrDefaultAsync(x => x.Checker == userId &&
+                x.CheckInTime.Year == DateTime.Now.Year &&
+                x.CheckInTime.Month == DateTime.Now.Month &&
+                x.CheckInTime.Day == DateTime.Now.Day)) != null;
+
+            return new ServiceResult<UserProfileDto>(dto);
         }
 
+        /// <summary>
+        /// 更新用户信息
+        /// </summary>
+        /// <param name="userProfileUpdateDto"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public async Task<ServiceResult> UpdateProfileAsync(UserProfileUpdateDto userProfileUpdateDto, string userId)
         {
             var user = await _junRecordDbContext.Accounts.FirstOrDefaultAsync(x => x.Id == userId);
@@ -82,6 +95,8 @@ namespace LiJunSpace.API.Services
             user.DisplayName = userProfileUpdateDto.DisplayName;
             user.Signature = userProfileUpdateDto.Signature;
             user.Sex = userProfileUpdateDto.Sex;
+            user.Email = userProfileUpdateDto.Email;
+            user.OpenEmailNotice = userProfileUpdateDto.OpenEmailNotice;
             user.Birthday = DateOnly.FromDateTime(userProfileUpdateDto.Birthday);
 
             _junRecordDbContext.Update(user);

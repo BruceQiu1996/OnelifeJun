@@ -20,12 +20,12 @@
         </CardHeaderAvatar>
         <CardHeaderContent>
             <MudText Typo="Typo.body1">@Profile.DisplayName</MudText>
-            <MudText Typo="Typo.body1">用户名：@Profile.UserName</MudText>
-            <MudText Typo="Typo.body1">@(Profile.Sex ? "男" : "女")</MudText>
-        </CardHeaderContent>
+                <MudText Typo="Typo.body1">用户名：@Profile.UserName</MudText>
+                <MudText Typo="Typo.body1">@(Profile.Sex ? "男" : "女")</MudText>
+            </CardHeaderContent>
 
-        <CardHeaderActions>
-            @if (CanEdit)
+            <CardHeaderActions>
+                @if (CanEdit)
             {
                 <MudFileUpload Accept=".png, .jpg" T="IBrowserFile" FilesChanged="OnSelectedAvatar">
                     <ButtonTemplate>
@@ -52,8 +52,28 @@
                 <span>@Profile.Signature</span>
             }
         </MudText>
+
+    </MudCardContent>
+    <MudCardContent>
+        <MudText Typo="Typo.body2">
+            <span>@Profile.Email</span>
+        </MudText>
     </MudCardContent>
     <MudCardContent>
         <MudText Typo="Typo.body2">生日: @Profile.Birthday</MudText>
-    </MudCardContent>
+        </MudCardContent>
+        @if (!@Profile.TodayIsCheckIn)
+    {
+        <MudButton Variant="Variant.Filled"
+                   OnClick="CheckInAsync"
+                   Style="margin:5px 0px 5px 15px"
+                   StartIcon="@Icons.Material.Filled.Check" Color="Color.Primary">签到</MudButton>
+    }
+    else
+    {
+        <MudButton Variant="Variant.Filled"
+                   Style="margin:5px 0px 5px 15px"
+                   Disabled="true"
+                   StartIcon="@Icons.Material.Filled.Circle" Color="Color.Primary">已签到</MudButton>
+    }
 </MudCard>

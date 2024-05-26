@@ -1,6 +1,7 @@
 using Autofac;
 using Autofac.Core;
 using Autofac.Extensions.DependencyInjection;
+using LiJunSpace.API.Channels;
 using LiJunSpace.API.Database;
 using LiJunSpace.API.Helpers;
 using LiJunSpace.API.Services;
@@ -41,6 +42,7 @@ namespace LiJunSpace.API
                     });
                 });
                 services.AddSingleton<PasswordHelper>();
+                services.AddSingleton<SendEmailChannel>();
                 services.AddEfCoreContext(hostContext.Configuration);
                 services.AddControllers();
                 services.AddEndpointsApiExplorer();

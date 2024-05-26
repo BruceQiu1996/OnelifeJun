@@ -21,6 +21,8 @@ namespace LiJunSpace.API.Dtos
                 CreateTime = account.CreateTime.ToString("yyyy-MM-dd"),
                 Signature = account.Signature,
                 Avatar = account.Avatar,
+                Email = account.Email,
+                OpenEmailNotice = account.OpenEmailNotice,
             };
         }
 

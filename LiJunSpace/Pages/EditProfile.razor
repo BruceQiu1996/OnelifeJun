@@ -25,7 +25,10 @@
     <MudCardContent xs="12">
         <MudTextField @bind-Value="@Signature" For="@(() =>Signature)" xs="12" Label="签名" Variant="Variant.Outlined" Clearable="true" />
     </MudCardContent>
-
+    <MudCardContent xs="12">
+        <MudTextField @bind-Value="@Email" For="@(() =>Email)" xs="12" Label="邮箱地址" Variant="Variant.Outlined" Clearable="true" />
+    </MudCardContent>
+    <MudCheckBox @bind-Value="@OpenEmailNotice" Style="margin-left:5px" Label="打开邮箱通知" Color="Color.Primary"></MudCheckBox>
     <MudRadioGroup @bind-Value="Sex" Style="margin-left:30px">
         <MudRadio Value="true"  Color="Color.Primary" Dense="true">男</MudRadio>
         <MudRadio Value="false" Color="Color.Secondary" Dense="false">女</MudRadio>

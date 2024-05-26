@@ -4,6 +4,7 @@
     {
         public const string Login = "api/account/login";
         public const string account_edit = "api/account/edit";
+        public const string account_checkin = "api/account/check-in";
         public const string upload_account_avatar = "api/account/upload-avatar";
         public const string profile = "api/account/profile/{0}";
         public const string upload_record_image = "api/records/upload-image";
