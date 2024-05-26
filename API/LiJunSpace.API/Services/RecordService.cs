@@ -124,7 +124,7 @@ namespace LiJunSpace.API.Services
 
         public async Task<ServiceResult<RecordDtoWithComments>> GetRecordAsync(string recordId)
         {
-            var entity = await _junRecordDbContext.Records.Include(x => x.Account).Include(x => x.Comments)
+            var entity = await _junRecordDbContext.Records.Include(x => x.Account).Include(x => x.Comments).ThenInclude(y => y.Account)
                 .FirstOrDefaultAsync(x => x.Id == recordId);
             if (entity == null)
                 return new ServiceResult<RecordDtoWithComments>(HttpStatusCode.NotFound, "记录数据异常");
