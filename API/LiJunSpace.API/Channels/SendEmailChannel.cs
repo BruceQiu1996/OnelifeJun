@@ -69,9 +69,9 @@ namespace LiJunSpace.API.Channels
                         {
                             await SendEmailAsync(obj.Target, obj.Title, obj.Content);
                         }
-                        catch (Exception ex)
+                        catch (SmtpException ex)
                         {
-                            _logger.LogError(ex.ToString());
+                            _logger.LogError(ex.StatusCode.ToString());
                             continue;
                         }
                     }
@@ -101,7 +101,7 @@ namespace LiJunSpace.API.Channels
                 SmtpClient smtpClient = new SmtpClient();
                 smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;//指定电子邮件发送方式
                 smtpClient.Host = stmpServer;//指定发送方SMTP服务器
-                smtpClient.EnableSsl = true;//使用安全加密连接
+                smtpClient.EnableSsl = false;//使用安全加密连接
                 smtpClient.UseDefaultCredentials = false;//不和请求一起发送
                 smtpClient.Credentials = new NetworkCredential(mailAccount, pwd);//设置发送账号密码
 
