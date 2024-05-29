@@ -211,8 +211,9 @@ namespace LiJunSpace.API.Services
 
             await _junRecordDbContext.SaveChangesAsync();
             var commentData = await _junRecordDbContext.Comments.Include(x => x.Account).FirstOrDefaultAsync(x => x.Id == comment.Id);
-            var account = await _junRecordDbContext.Accounts.FirstOrDefaultAsync(x => x.OpenEmailNotice && x.Id == record.Publisher);
-            if (account != null)
+            var account = await _junRecordDbContext.Accounts
+                .FirstOrDefaultAsync(x => x.OpenEmailNotice && x.Id == record.Publisher);
+            if (account != null && userId != account.Id)
             {
                 await _sendEmailChannel.WriteMessageAsync(new List<SendEmailObject>() { new SendEmailObject()
                 {

@@ -17,6 +17,10 @@
     <MudMainContent>
         @Body
     </MudMainContent>
+
+    <div style="display: flex; justify-content: center;">
+        <MudLink Style="margin:5px auto" href="https://beian.miit.gov.cn/" target="_blank">@Program.RecordNumber</MudLink>
+    </div>
 </MudLayout>
 @inject IJSRuntime JSRuntime
 @code {

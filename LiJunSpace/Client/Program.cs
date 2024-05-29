@@ -8,6 +8,7 @@ namespace LiJunSpace
     public class Program
     {
         internal static string APIEndPoint;
+        internal static string RecordNumber;//±¸°¸ºÅ
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -20,6 +21,8 @@ namespace LiJunSpace
             builder.Services.AddSingleton<HttpRequest>();
             var host = builder.Build();
             APIEndPoint = host.Configuration.GetValue<string>("RemoteAPIHost")!;
+            RecordNumber = host.Configuration.GetValue<string>("RecordNumber")!;
+
             await host.RunAsync();
         }
     }
