@@ -72,13 +72,58 @@ namespace LiJunSpace.API.Services
                 x.CheckInTime.Month == DateTime.Now.Month &&
                 x.CheckInTime.Day == DateTime.Now.Day)) != null;
 
-            var con1 = await _junRecordDbContext.Database
-                .SqlQueryRaw<int>($"SELECT COUNT(1) FROM(SELECT datediff(t.date,date_sub(curdate(),interval t.rownum day)) as dayinterval FROM (SELECT date_format(CheckInTime,'%Y-%m-%d') as date,row_number() over(ORDER BY CheckInTime DESC) as rownum FROM checkinrecords where checker = '{userId}')t)t1 WHERE t1.dayinterval=0;").ToListAsync();
-            var con2 = await _junRecordDbContext.Database
-                .SqlQueryRaw<int>($"SELECT COUNT(1) FROM(SELECT datediff(t.date,date_sub(curdate(),interval t.rownum day)) as dayinterval FROM (SELECT date_format(CheckInTime,'%Y-%m-%d') as date,row_number() over(ORDER BY CheckInTime DESC) as rownum FROM checkinrecords where checker = '{userId}')t)t1 WHERE t1.dayinterval=1;").ToListAsync();
-            dto.ContinueCheckInDays = Math.Max(con1.FirstOrDefault(), con2.FirstOrDefault());
+            //var con1 = await _junRecordDbContext.Database
+            //    .SqlQueryRaw<int>($"SELECT COUNT(1) FROM(SELECT datediff(t.date,date_sub(curdate(),interval t.rownum day)) as dayinterval FROM (SELECT date_format(CheckInTime,'%Y-%m-%d') as date,row_number() over(ORDER BY CheckInTime DESC) as rownum FROM checkinrecords where checker = '{userId}')t)t1 WHERE t1.dayinterval=0;").ToListAsync();
+            //var con2 = await _junRecordDbContext.Database
+            //    .SqlQueryRaw<int>($"SELECT COUNT(1) FROM(SELECT datediff(t.date,date_sub(curdate(),interval t.rownum day)) as dayinterval FROM (SELECT date_format(CheckInTime,'%Y-%m-%d') as date,row_number() over(ORDER BY CheckInTime DESC) as rownum FROM checkinrecords where checker = '{userId}')t)t1 WHERE t1.dayinterval=1;").ToListAsync();
+            //dto.ContinueCheckInDays = Math.Max(con1.FirstOrDefault(), con2.FirstOrDefault());
+            var records = 
+                await _junRecordDbContext.CheckInRecords.Where(x => x.Checker == userId).OrderByDescending(x=>x.CheckInTime).ToListAsync();
+            var count = 0;
+            var index = 0;
+            foreach (var record in records) 
+            {
+                if (IsSameDay(record.CheckInTime,DateTime.Now.AddDays(-1 * index)))
+                {
+                    count++;
+                }
+                else 
+                {
+                    break;
+                }
+
+                index++;
+            }
+
+            var count1 = 0;
+            var index1 = 1;
+            foreach (var record in records)
+            {
+                if (IsSameDay(record.CheckInTime,DateTime.Now.AddDays(-1 * index1)))
+                {
+                    count1++;
+                }
+                else
+                {
+                    break;
+                }
+
+                index1++;
+            }
+
+            dto.ContinueCheckInDays = Math.Max(count, count1);
 
             return new ServiceResult<UserProfileDto>(dto);
+        }
+
+        private bool IsSameDay(DateTime dateTime, DateTime dateTime1)
+        {
+            if (dateTime.Year == dateTime1.Year && dateTime.Month == dateTime1.Month && dateTime.Day == dateTime1.Day)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>

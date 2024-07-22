@@ -1,7 +1,7 @@
 ﻿<MudNavMenu>
     <MudNavLink Href="/" Match="NavLinkMatch.All">主页</MudNavLink>
     <MudNavLink Href="/events" Match="NavLinkMatch.All">查看事件</MudNavLink>
-    <MudNavLink OnClick="GoSelfPage" Match="NavLinkMatch.All">个人信息</MudNavLink>
+    <MudNavLink Href="/profile/0" Match="NavLinkMatch.All">个人信息</MudNavLink>
     <MudNavLink OnClick="Logout" Match="NavLinkMatch.All">退出登录</MudNavLink>
 </MudNavMenu>
 
@@ -14,11 +14,5 @@
         await JSRuntime.InvokeVoidAsync("localStorageInterop.removeItem", "userId");
 
         NavigationManager.NavigateTo("/login", false, true);
-    }
-
-    public async void GoSelfPage()
-    {
-        var userId = await JSRuntime.InvokeAsync<string>("localStorageInterop.getItem", "userId");
-        NavigationManager.NavigateTo($"/profile/{userId}", false);
     }
 }

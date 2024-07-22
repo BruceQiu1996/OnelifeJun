@@ -1,6 +1,5 @@
 ﻿using LiJunSpace.Common.Dtos.Account;
 using LiJunSpace.Helpers;
-using LiJunSpace.Pages;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
@@ -27,6 +26,10 @@ namespace LiJunSpace.ViewModels
         protected override async Task OnParametersSetAsync()
         {
             Profile = new UserProfileDto();
+            if (string.IsNullOrEmpty(Id) || Id == "0")
+            {
+                Id = await JSRuntime.InvokeAsync<string>("localStorageInterop.getItem", "userId");
+            }
             var resp = await HttpRequest.GetAsync(string.Format(HttpRequestUrls.profile, Id));
             if (resp != null)
             {
