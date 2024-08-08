@@ -37,14 +37,14 @@ namespace LiJunSpace.API.Controllers
             }
         }
 
-        [Route("profile/{id}")] 
+        [Route("profile/{id}")]
         [HttpGet]
         [Authorize]
         public async Task<ActionResult> ProfileAsync(string id)
         {
             try
             {
-                var result = await _accountService.ProfileAsync(id);
+                var result = await _accountService.ProfileAsync(id, HttpContext.User.Identity!.Name!);
 
                 return result.ToActionResult();
             }
@@ -96,6 +96,23 @@ namespace LiJunSpace.API.Controllers
             try
             {
                 var result = await _checkInService.CheckInAsync(HttpContext.User.Identity!.Name!);
+
+                return result.ToActionResult();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                return Problem();
+            }
+        }
+
+        [Authorize]
+        [HttpPost("like/{id}")]
+        public async Task<ActionResult> Like(string id)
+        {
+            try
+            {
+                var result = await _accountService.LikeAsync(HttpContext.User.Identity!.Name!, id);
 
                 return result.ToActionResult();
             }

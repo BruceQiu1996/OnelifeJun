@@ -1,4 +1,5 @@
-﻿using LiJunSpace.API.Database;
+﻿using LiJunSpace.API.Channels;
+using LiJunSpace.API.Database;
 using LiJunSpace.API.Database.Entities;
 using LiJunSpace.API.Dtos;
 using LiJunSpace.API.Helpers;
@@ -20,11 +21,14 @@ namespace LiJunSpace.API.Services
         private readonly JunRecordDbContext _junRecordDbContext;
         private readonly PasswordHelper _passwordHelper;
         private readonly IConfiguration _configuration;
-        public AccountService(JunRecordDbContext junRecordDbContext, PasswordHelper passwordHelper, IConfiguration configuration)
+        private readonly AddIntegralChannel _addIntegralChannel;
+
+        public AccountService(JunRecordDbContext junRecordDbContext, PasswordHelper passwordHelper, IConfiguration configuration, AddIntegralChannel addIntegralChannel)
         {
             _junRecordDbContext = junRecordDbContext;
             _passwordHelper = passwordHelper;
             _configuration = configuration;
+            _addIntegralChannel = addIntegralChannel;
         }
 
         /// <summary>
@@ -55,7 +59,7 @@ namespace LiJunSpace.API.Services
         /// </summary>
         /// <param name="userLoginDto">用户id</param>
         /// <returns></returns>
-        public async Task<ServiceResult<UserProfileDto>> ProfileAsync(string userId)
+        public async Task<ServiceResult<UserProfileDto>> ProfileAsync(string userId, string me)
         {
             var user = await _junRecordDbContext.Accounts.FirstOrDefaultAsync(x => x.Id == userId);
             if (user == null)
@@ -72,22 +76,17 @@ namespace LiJunSpace.API.Services
                 x.CheckInTime.Month == DateTime.Now.Month &&
                 x.CheckInTime.Day == DateTime.Now.Day)) != null;
 
-            //var con1 = await _junRecordDbContext.Database
-            //    .SqlQueryRaw<int>($"SELECT COUNT(1) FROM(SELECT datediff(t.date,date_sub(curdate(),interval t.rownum day)) as dayinterval FROM (SELECT date_format(CheckInTime,'%Y-%m-%d') as date,row_number() over(ORDER BY CheckInTime DESC) as rownum FROM checkinrecords where checker = '{userId}')t)t1 WHERE t1.dayinterval=0;").ToListAsync();
-            //var con2 = await _junRecordDbContext.Database
-            //    .SqlQueryRaw<int>($"SELECT COUNT(1) FROM(SELECT datediff(t.date,date_sub(curdate(),interval t.rownum day)) as dayinterval FROM (SELECT date_format(CheckInTime,'%Y-%m-%d') as date,row_number() over(ORDER BY CheckInTime DESC) as rownum FROM checkinrecords where checker = '{userId}')t)t1 WHERE t1.dayinterval=1;").ToListAsync();
-            //dto.ContinueCheckInDays = Math.Max(con1.FirstOrDefault(), con2.FirstOrDefault());
-            var records = 
-                await _junRecordDbContext.CheckInRecords.Where(x => x.Checker == userId).OrderByDescending(x=>x.CheckInTime).ToListAsync();
+            var records =
+                await _junRecordDbContext.CheckInRecords.Where(x => x.Checker == userId).OrderByDescending(x => x.CheckInTime).ToListAsync();
             var count = 0;
             var index = 0;
-            foreach (var record in records) 
+            foreach (var record in records)
             {
-                if (IsSameDay(record.CheckInTime,DateTime.Now.AddDays(-1 * index)))
+                if (IsSameDay(record.CheckInTime, DateTime.Now.AddDays(-1 * index)))
                 {
                     count++;
                 }
-                else 
+                else
                 {
                     break;
                 }
@@ -99,7 +98,7 @@ namespace LiJunSpace.API.Services
             var index1 = 1;
             foreach (var record in records)
             {
-                if (IsSameDay(record.CheckInTime,DateTime.Now.AddDays(-1 * index1)))
+                if (IsSameDay(record.CheckInTime, DateTime.Now.AddDays(-1 * index1)))
                 {
                     count1++;
                 }
@@ -112,6 +111,20 @@ namespace LiJunSpace.API.Services
             }
 
             dto.ContinueCheckInDays = Math.Max(count, count1);
+            if (me != userId)
+            {
+                dto.TodayIsLike = (await _junRecordDbContext.LikeRecords.FirstOrDefaultAsync(x => x.Activer == me && x.Passiver == userId &&
+                x.LikeTime.Year == DateTime.Now.Year &&
+                x.LikeTime.Month == DateTime.Now.Month &&
+                x.LikeTime.Day == DateTime.Now.Day)) != null;
+            }
+
+            dto.Integrals = await _junRecordDbContext.Integrals.Where(x => x.Publisher == userId).Select(x => new IntegralDto()
+            {
+                Id = x.Id,
+                CreateTime = x.CreateTime,
+                Type = x.Type
+            }).OrderByDescending(x => x.CreateTime).ToListAsync();
 
             return new ServiceResult<UserProfileDto>(dto);
         }
@@ -215,6 +228,48 @@ namespace LiJunSpace.API.Services
             await _junRecordDbContext.SaveChangesAsync();
 
             return new ServiceResult<string>(fileName);
+        }
+
+        /// <summary>
+        /// 喜爱
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="targetId"></param>
+        /// <returns></returns>
+        public async Task<ServiceResult> LikeAsync(string userId, string targetId)
+        {
+            var active = await _junRecordDbContext.Accounts.FirstOrDefaultAsync(x => x.Id == userId);
+            if (active == null)
+                return new ServiceResult(HttpStatusCode.BadRequest, "用户异常");
+
+            var passive = await _junRecordDbContext.Accounts.FirstOrDefaultAsync(x => x.Id == targetId);
+            if (passive == null)
+                return new ServiceResult(HttpStatusCode.BadRequest, "用户异常");
+
+            var record = await _junRecordDbContext.LikeRecords.FirstOrDefaultAsync(x => x.Activer == userId && x.Passiver == targetId &&
+                x.LikeTime.Year == DateTime.Now.Year &&
+                x.LikeTime.Month == DateTime.Now.Month &&
+                x.LikeTime.Day == DateTime.Now.Day);
+
+            if (record != null)
+            {
+                return new ServiceResult(HttpStatusCode.BadRequest, "喜爱异常");
+            }
+
+            await _junRecordDbContext.LikeRecords.AddAsync(new LikeRecord()
+            {
+                Activer = userId,
+                LikeTime = DateTime.Now,
+                Passiver = targetId
+            });
+            await _junRecordDbContext.SaveChangesAsync();
+            await _addIntegralChannel.WriteMessageAsync(new Integral()
+            {
+                Type = IntegralType.Like,
+                Publisher = userId
+            });
+
+            return new ServiceResult();
         }
     }
 }

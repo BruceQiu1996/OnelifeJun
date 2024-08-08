@@ -95,5 +95,16 @@ namespace LiJunSpace.ViewModels
                 StateHasChanged();
             }
         }
+
+        public async Task LikeAsync() 
+        {
+            var resp = await HttpRequest.PostAsync(string.Format(HttpRequestUrls.account_like, Profile.Id), null);
+            if (resp != null)
+            {
+                Profile.TodayIsLike = true;
+                Snackbar.Add("发送喜爱成功", Severity.Success);
+                StateHasChanged();
+            }
+        }
     }
 }

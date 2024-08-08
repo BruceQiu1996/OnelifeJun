@@ -12,6 +12,8 @@ namespace LiJunSpace.API.Database
         public DbSet<OurEvent> Events { get; set; }
         public DbSet<CheckInRecord> CheckInRecords { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<Integral> Integrals { get; set; }
+        public DbSet<LikeRecord> LikeRecords { get; set; }
 
         private readonly PasswordHelper _passwordHelper;
         public JunRecordDbContext(DbContextOptions options, PasswordHelper passwordHelper) : base(options)

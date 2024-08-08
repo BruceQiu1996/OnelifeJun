@@ -1,5 +1,8 @@
-﻿using LiJunSpace.API.Database;
+﻿using LiJunSpace.API.Channels;
+using LiJunSpace.API.Database;
+using LiJunSpace.API.Database.Entities;
 using LiJunSpace.API.Dtos;
+using LiJunSpace.Common.Dtos.Account;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
@@ -8,10 +11,12 @@ namespace LiJunSpace.API.Services
     public class CheckInService : IAppService
     {
         private readonly JunRecordDbContext _junRecordDbContext;
+        private readonly AddIntegralChannel _addIntegralChannel;
 
-        public CheckInService(JunRecordDbContext junRecordDbContext)
+        public CheckInService(JunRecordDbContext junRecordDbContext, AddIntegralChannel addIntegralChannel)
         {
             _junRecordDbContext = junRecordDbContext;
+            _addIntegralChannel = addIntegralChannel;
         }
 
         /// <summary>
@@ -34,13 +39,19 @@ namespace LiJunSpace.API.Services
                 return new ServiceResult(HttpStatusCode.BadRequest, "签到异常");
             }
 
-            await _junRecordDbContext.CheckInRecords.AddAsync(new Database.Entities.CheckInRecord()
+            await _junRecordDbContext.CheckInRecords.AddAsync(new CheckInRecord()
             {
                 Checker = userId,
                 CheckInTime = DateTime.Now,
             });
-
             await _junRecordDbContext.SaveChangesAsync();
+
+
+            await _addIntegralChannel.WriteMessageAsync(new Integral()
+            {
+                Type = IntegralType.Checkin,
+                Publisher = userId
+            });
 
             return new ServiceResult();
         }

@@ -43,6 +43,7 @@ namespace LiJunSpace.API
                 });
                 services.AddSingleton<PasswordHelper>();
                 services.AddSingleton<SendEmailChannel>();
+                services.AddSingleton<AddIntegralChannel>();
                 services.AddEfCoreContext(hostContext.Configuration);
                 services.AddControllers();
                 services.AddEndpointsApiExplorer();

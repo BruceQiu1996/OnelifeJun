@@ -14,5 +14,23 @@
         public bool OpenEmailNotice { get; set; }
         public bool TodayIsCheckIn { get; set; }
         public int ContinueCheckInDays { get; set; }
+        public bool TodayIsLike { get; set; }
+        public List<IntegralDto> Integrals { get; set; }
     }
+
+    public class IntegralDto 
+    {
+        public string Id { get; set; }
+        public IntegralType Type { get; set; }
+        public DateTime CreateTime { get; set; }
+    }
+
+    public enum IntegralType
+    {
+        PublishRecord = 12,
+        Checkin = 5,
+        Comment = 2,
+        Like = 10
+    }
+
 }

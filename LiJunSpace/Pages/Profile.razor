@@ -20,12 +20,12 @@
         </CardHeaderAvatar>
         <CardHeaderContent>
             <MudText Typo="Typo.body1">@Profile.DisplayName</MudText>
-                <MudText Typo="Typo.body1">用户名：@Profile.UserName</MudText>
-                <MudText Typo="Typo.body1">@(Profile.Sex ? "男" : "女")</MudText>
-            </CardHeaderContent>
+            <MudText Typo="Typo.body1">用户名：@Profile.UserName</MudText>
+            <MudText Typo="Typo.body1">@(Profile.Sex ? "男" : "女")</MudText>
+        </CardHeaderContent>
 
-            <CardHeaderActions>
-                @if (CanEdit)
+        <CardHeaderActions>
+            @if (CanEdit)
             {
                 <MudFileUpload Accept=".png, .jpg" T="IBrowserFile" FilesChanged="OnSelectedAvatar">
                     <ButtonTemplate>
@@ -61,8 +61,11 @@
     </MudCardContent>
     <MudCardContent>
         <MudText Typo="Typo.body2">生日: @Profile.Birthday</MudText>
-        </MudCardContent>
-        @if (CanEdit)
+    </MudCardContent>
+    <MudCardContent>
+        <MudText Typo="Typo.body2">积分: @Profile.Integrals?.Sum(x => (int)x.Type)</MudText>
+    </MudCardContent>
+    @if (CanEdit)
     {
         @if (!@Profile.TodayIsCheckIn)
         {
@@ -92,4 +95,62 @@
             天
         </MudText>
     }
+
+    @if (!CanEdit)
+    {
+        if (!Profile.TodayIsLike)
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.Favorite" Variant="Variant.Outlined"
+                           OnClick="LikeAsync" Size="Size.Small"
+                           Style="margin:5px 0px 5px 15px" Color="Color.Secondary"></MudIconButton>
+        }
+
+        else
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.Favorite" Size="Size.Small" Variant="Variant.Filled" Style="margin:5px 0px 5px 15px" Color="Color.Secondary"></MudIconButton>
+        }
+    }
 </MudCard>
+
+@if (Profile.Integrals != null && Profile.Integrals.Count > 0)
+{
+    <MudCard Style="margin:10px 10px 10px 10px;">
+        <MudText Typo="Typo.h6" Style="margin:2px">历史动态</MudText>
+        <MudTimeline Style="margin:5px">
+            @foreach (var item in Profile.Integrals)
+            {
+                if (item.Type == Common.Dtos.Account.IntegralType.Checkin)
+                {
+                    <MudTimelineItem Color="Color.Info">
+                        <MudText Typo="Typo.button">用户签到 (+5积分)</MudText>
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">@item.CreateTime</MudText>
+                    </MudTimelineItem>
+                }
+
+                if (item.Type == Common.Dtos.Account.IntegralType.Comment)
+                {
+                    <MudTimelineItem Color="Color.Warning">
+                        <MudText Typo="Typo.button">发表了一个评论 (+2积分)</MudText>
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">@item.CreateTime</MudText>
+                    </MudTimelineItem>
+                }
+
+                if (item.Type == Common.Dtos.Account.IntegralType.Like)
+                {
+                    <MudTimelineItem Color="Color.Error">
+                        <MudText Typo="Typo.button">对某人表达了浓烈的喜欢 (+10积分)</MudText>
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">@item.CreateTime</MudText>
+                    </MudTimelineItem>
+                }
+
+                if (item.Type == Common.Dtos.Account.IntegralType.PublishRecord)
+                {
+                    <MudTimelineItem Color="Color.Success">
+                        <MudText Typo="Typo.button">发表了一篇日记 (+12积分)</MudText>
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">@item.CreateTime</MudText>
+                    </MudTimelineItem>
+                }
+            }
+        </MudTimeline>
+    </MudCard>
+}

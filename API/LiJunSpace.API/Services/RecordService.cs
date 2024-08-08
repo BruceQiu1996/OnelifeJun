@@ -2,6 +2,7 @@
 using LiJunSpace.API.Database;
 using LiJunSpace.API.Database.Entities;
 using LiJunSpace.API.Dtos;
+using LiJunSpace.Common.Dtos.Account;
 using LiJunSpace.Common.Dtos.Record;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
@@ -15,12 +16,14 @@ namespace LiJunSpace.API.Services
         private readonly JunRecordDbContext _junRecordDbContext;
         private readonly IConfiguration _configuration;
         private readonly SendEmailChannel _sendEmailChannel;
+        private readonly AddIntegralChannel _addIntegralChannel;
 
-        public RecordService(JunRecordDbContext junRecordDbContext, IConfiguration configuration, SendEmailChannel sendEmailChannel)
+        public RecordService(JunRecordDbContext junRecordDbContext, IConfiguration configuration, SendEmailChannel sendEmailChannel, AddIntegralChannel addIntegralChannel)
         {
             _junRecordDbContext = junRecordDbContext;
             _configuration = configuration;
             _sendEmailChannel = sendEmailChannel;
+            _addIntegralChannel = addIntegralChannel;
         }
 
         public async Task<ServiceResult<string>> UploadRecordImageAsync(string userId, IFormFile file)
@@ -81,7 +84,11 @@ namespace LiJunSpace.API.Services
                 });
 
             await _sendEmailChannel.WriteMessageAsync(objs);
-
+            await _addIntegralChannel.WriteMessageAsync(new Integral()
+            {
+                Type = IntegralType.PublishRecord,
+                Publisher = userId
+            });
             return new ServiceResult();
         }
 
@@ -222,6 +229,12 @@ namespace LiJunSpace.API.Services
                     Title="你有一个新的评论通知"
                 }});
             }
+
+            await _addIntegralChannel.WriteMessageAsync(new Integral()
+            {
+                Type = IntegralType.Comment,
+                Publisher = userId
+            });
 
             return new ServiceResult<CommentDto>(commentData?.ToDto());
         }
