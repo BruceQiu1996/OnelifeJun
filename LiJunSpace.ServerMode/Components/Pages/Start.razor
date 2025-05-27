@@ -1,0 +1,12 @@
+﻿@page "/"
+@inject NavigationManager NavigationManager;
+@code {
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            NavigationManager.NavigateTo("/records", false, true);
+        }
+    }
+}

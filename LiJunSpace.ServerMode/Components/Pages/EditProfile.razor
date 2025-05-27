@@ -1,0 +1,38 @@
+﻿@inherits LiJunSpace.ViewModels.EditProfileComponentViewModel;
+@page "/profile/edit"
+
+<MudCard Style="margin:5px 5px 5px 5px;">
+    <div style="display: flex">
+        <MudStack Row="true" Class="d-flex flex-wrap" Style="margin-left:auto;margin-right:15px;margin-top:10px">
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Edit"
+                       OnClick="SaveAsync">
+                保存
+            </MudButton>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Warning"
+                       StartIcon="@Icons.Material.Filled.Cancel"
+                       OnClick="CancelEdit">
+                取消
+            </MudButton>
+        </MudStack>
+    </div>
+
+    <MudCardContent xs="12">
+        <MudTextField @bind-Value="@DisplayName" For="@(() =>DisplayName)" xs="12" Label="昵称" Variant="Variant.Outlined" Clearable="true" />
+    </MudCardContent>
+    <MudCardContent xs="12">
+        <MudTextField @bind-Value="@Signature" For="@(() =>Signature)" xs="12" Label="签名" Variant="Variant.Outlined" Clearable="true" />
+    </MudCardContent>
+    <MudCardContent xs="12">
+        <MudTextField @bind-Value="@Email" For="@(() =>Email)" xs="12" Label="邮箱地址" Variant="Variant.Outlined" Clearable="true" />
+    </MudCardContent>
+    <MudCheckBox @bind-Value="@OpenEmailNotice" Style="margin-left:5px" Label="打开邮箱通知" Color="Color.Primary"></MudCheckBox>
+    <MudRadioGroup @bind-Value="Sex" Style="margin-left:30px">
+        <MudRadio Value="true"  Color="Color.Primary" Dense="true">男</MudRadio>
+        <MudRadio Value="false" Color="Color.Secondary" Dense="false">女</MudRadio>
+    </MudRadioGroup>
+
+    <MudDatePicker PickerVariant="PickerVariant.Dialog" @bind-Date="Birthday" Style="margin: 0 20px 20px 20px"/>
+</MudCard>

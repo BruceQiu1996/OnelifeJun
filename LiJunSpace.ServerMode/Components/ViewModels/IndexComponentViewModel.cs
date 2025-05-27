@@ -1,6 +1,6 @@
 ﻿using LiJunSpace.Common.Dtos.Event;
 using LiJunSpace.Common.Dtos.Record;
-using LiJunSpace.Helpers;
+using LiJunSpace.ServerMode.Helpers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MudBlazor;
@@ -11,7 +11,7 @@ namespace LiJunSpace.ViewModels
     public class IndexComponentViewModel : ComponentBase
     {
         [Inject]
-        public HttpRequest HttpRequest { get; set; }
+        public MyHttpRequest HttpRequest { get; set; }
         [Inject]
         NavigationManager Navigation { get; set; }
         [Inject]
@@ -38,16 +38,19 @@ namespace LiJunSpace.ViewModels
             Navigation.NavigateTo("/newRecord", forceLoad: false, replace: false);
         }
 
-        protected async override Task OnInitializedAsync()
+        protected async override Task OnAfterRenderAsync(bool firstRender)
         {
-            await QueryTopEvents();
-            await QueryRecordsByPageAsync(CurrentPage);
+            if (firstRender) 
+            {
+                await QueryTopEvents();
+                await QueryRecordsByPageAsync(CurrentPage);
+            }
         }
 
         public async Task OnLoadAsync()
         {
-            CurrentPage += 1;
-            await QueryRecordsByPageAsync(CurrentPage);
+            int page  = CurrentPage + 1;
+            await QueryRecordsByPageAsync(page);
         }
 
         public async Task JumpToTop() 
@@ -70,7 +73,7 @@ namespace LiJunSpace.ViewModels
             if (resp != null)
             {
                 Events = JsonSerializer
-                    .Deserialize<List<EventDto>>(await resp.Content.ReadAsStringAsync(), HttpRequest._jsonSerializerOptions);
+                    .Deserialize<List<EventDto>>(await resp.Content.ReadAsStringAsync(), MyHttpRequest._jsonSerializerOptions);
 
                 StateHasChanged();
             }
@@ -78,6 +81,9 @@ namespace LiJunSpace.ViewModels
 
         private async Task QueryRecordsByPageAsync(int page)
         {
+            if (IsLoading)
+                return;
+
             IsDialogVisible = false;
             IsLoading = true;
             try
@@ -86,7 +92,7 @@ namespace LiJunSpace.ViewModels
                 if (resp != null)
                 {
                     var result = JsonSerializer
-                        .Deserialize<RecordQueryResultDto>(await resp.Content.ReadAsStringAsync(), HttpRequest._jsonSerializerOptions);
+                        .Deserialize<RecordQueryResultDto>(await resp.Content.ReadAsStringAsync(), MyHttpRequest._jsonSerializerOptions);
 
                     PageCount = result.AllCount / 10;
                     if (result.AllCount % 10 != 0)
@@ -94,8 +100,11 @@ namespace LiJunSpace.ViewModels
                         PageCount++;
                     }
                     if (result.Records != null && result.Records.Count > 0)
+                    {
                         Records.AddRange(result.Records);
-                    else 
+                        CurrentPage = page;
+                    }
+                    else
                     {
                         HasMoreData = false;
                     }
@@ -125,7 +134,7 @@ namespace LiJunSpace.ViewModels
             var scrollTop = await JSRuntime.InvokeAsync<double>("getScrollTop", scrollContainer);
             var clientHeight = await JSRuntime.InvokeAsync<double>("getClientHeight", scrollContainer);
 
-            if (scrollHeight - scrollTop <= clientHeight + 50) // 接近底部100px时加载
+            if (scrollHeight - scrollTop <= clientHeight + 100) // 接近底部100px时加载
             {
                 await OnLoadAsync();
             }

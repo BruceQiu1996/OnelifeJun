@@ -1,0 +1,71 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="MyCustomTheme" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudLayout>
+    <MudAppBar>
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" aria-label="delete" Color="Color.Inherit" OnClick="GoBack"></MudIconButton>
+        丽君❤球球的情侣空间
+    </MudAppBar>
+    <MudDrawer @bind-Open="@_drawerOpen">
+        <NavMenu />
+    </MudDrawer>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+
+    <div style="display: flex; justify-content: center;">
+        <MudLink Style="margin:5px auto" href="https://beian.miit.gov.cn/" target="_blank">@Program.RecordNumber</MudLink>
+    </div>
+</MudLayout>
+
+@inject IJSRuntime JSRuntime
+@code {
+    MudTheme MyCustomTheme = new MudTheme()
+        {
+            PaletteLight = new PaletteLight()
+            {
+                Primary = Colors.LightGreen.Default,
+                Secondary = Colors.Purple.Accent4,
+                AppbarBackground = Colors.LightGreen.Default,
+            },
+            PaletteDark = new PaletteDark()
+            {
+                Primary = Colors.Blue.Lighten1
+            },
+
+            LayoutProperties = new LayoutProperties()
+            {
+                DrawerWidthLeft = "260px",
+                DrawerWidthRight = "300px"
+            }
+        };
+}
+
+@inject LiJunSpace.ServerMode.Helpers.MyHttpRequest Httprequest;
+@inject NavigationManager NavigationManager;
+@code {
+    protected override void OnInitialized()
+    {
+        Httprequest.ExcuteWhileUnauthorized += () =>
+        {
+            NavigationManager.NavigateTo("/login", false, true);
+        };
+    }
+
+    bool _drawerOpen = true;
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private void GoBack()
+    {
+        JSRuntime.InvokeVoidAsync("window.history.back");
+
+    }
+}

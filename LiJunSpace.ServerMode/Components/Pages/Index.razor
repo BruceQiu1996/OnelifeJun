@@ -15,7 +15,7 @@
 @if (Events != null && Events.Count > 0)
 {
     <MudPaper Style="margin:10px">
-        <MudList Clickable="true">
+        <MudList Clickable="true" T="LiJunSpace.Common.Dtos.Event.EventDto">
             @foreach (var eventItem in Events)
             {
                 <MudListItem Style="height:40px;margin-top:5px">
@@ -68,7 +68,7 @@
                 </CardHeaderAvatar>
                 <CardHeaderContent>
                     <MudText Typo="Typo.body1">@record.PublisherDisplayName</MudText>
-                    <MudText Typo="Typo.body2" Style="@($"color:{Colors.Grey.Lighten1};")">@record.PublishTime.ToString("yyyy-MM-dd HH:mm:ss")</MudText>
+                    <MudText Typo="Typo.body2" Style="@($"color:{Colors.Gray.Lighten1};")">@record.PublishTime.ToString("yyyy-MM-dd HH:mm:ss")</MudText>
                 </CardHeaderContent>
             </MudCardHeader>
 
@@ -125,7 +125,7 @@
                 VisibleCssClass="visible"
                 OnScroll="OnScroll_1"
                 HiddenCssClass="invisible"
-                Style="position: fixed; bottom: 40px; right: 10px; z-index: 1000;">
+                Style="position: fixed; bottom: 35px; right: 15px; z-index: 1000;">
     <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.ArrowUpward" Color="Color">Go to top</MudButton>
 </MudScrollToTop>
 

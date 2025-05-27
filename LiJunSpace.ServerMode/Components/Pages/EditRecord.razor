@@ -1,0 +1,73 @@
+﻿@inherits LiJunSpace.ViewModels.EditRecordComponentViewModel;
+@page "/records/edit/{RecordId}"
+
+<MudOverlay @bind-Visible="IsDialogVisible" DarkBackground="true" AutoClose="true">
+    <div style="display: flex; justify-content: center;">
+        <MudImage Style="width:90%;margin:0 auto" Src='@(CurrentImage.New ? CurrentImage.File: $"{Program.APIEndPoint}/api/record/images/{CurrentImage.File}")'
+                  alt="Enlarged Image" ObjectFit="ObjectFit.Fill" />
+    </div>
+</MudOverlay>
+<MudDrawer @bind-Open="@Open" Width="100%" Height="80px" Anchor="Anchor.Bottom" Elevation="1" Variant="@DrawerVariant.Temporary">
+    <MudNavMenu>
+        <MudNavLink OnClick="ViewImageAction">查看大图</MudNavLink>
+        <MudNavLink OnClick="DeleteImageAction" Style="@($"color:{Colors.Red.Accent1};")">删除图片</MudNavLink>
+    </MudNavMenu>
+</MudDrawer>
+<MudCard Style="margin:10px">
+    <div style="display: flex">
+        <MudStack Row="true" Class="d-flex flex-wrap" Style="margin-left:auto;margin-right:15px;margin-top:10px">
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Edit"
+                       OnClick="SaveAsync">
+                保存
+            </MudButton>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Warning"
+                       StartIcon="@Icons.Material.Filled.Cancel"
+                       OnClick="CancelEdit">
+                取消
+            </MudButton>
+        </MudStack>
+    </div>
+    <MudCardContent xs="12">
+        <MudTextField @bind-Value="@Title" For="@(() =>Title)" xs="12" Label="标题" Variant="Variant.Outlined" Clearable="true" />
+    </MudCardContent>
+    <MudCardContent xs="12">
+        <MudTextField T="string" xs="12" Label="正文" For="@(() =>Content)" Clearable="true" Variant="Variant.Outlined" @bind-Value="@Content" Lines="5" />
+    </MudCardContent>
+
+    <MudFileUpload Accept=".png, .jpg" T="IReadOnlyList<IBrowserFile>" FilesChanged="UploadFilesAsync">
+        <ActivatorContent>
+            <MudButton HtmlTag="label"
+                       Style="margin-left:15px"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.CloudUpload">
+                上传图片
+            </MudButton>
+        </ActivatorContent>
+    </MudFileUpload>
+    <MudStack Row="true" Class="d-flex flex-wrap" Style="min-height:20px" ondragover="event.preventDefault();">
+        @foreach (var file in ImageList)
+        {
+            <MudItem Class="pa-3 disable_menu" draggable="true"
+                     @onmouseover="()=>{IsDialogVisible = false;}"
+                     onclick="event.preventDefault()"
+                     data-id="@file.Id"
+                     @ondragstart="()=>{DraggingImage = file;IsDialogVisible = false;}"
+                     @ondrop="()=>HandleDrop(file)"
+                     @ondragenter="@(()=>{file.IsDragOver = true; })"
+                     @ondragleave="@(()=> {file.IsDragOver = false; })"
+                     @ondragend="(e)=> {DraggingImage = null;}"
+                     ondragover="event.preventDefault();">
+                <MudImage ObjectFit="ObjectFit.Cover"
+                          Class="disable_menu rounded-lg"
+                          Width="86" Height="86" Src='@(file.New ? file.File: $"{Program.APIEndPoint}/api/record/images/{file.File}")'
+                          Elevation="25"
+                          ondragover="event.preventDefault();"
+                          onclick="@(()=>{OpenImageDrawer(file.Id);})" />
+            </MudItem>
+        }
+    </MudStack>
+</MudCard>

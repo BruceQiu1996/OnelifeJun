@@ -1,0 +1,155 @@
+﻿@page "/profile/{Id}"
+@inherits LiJunSpace.ViewModels.ProfileComponentViewModel;
+
+<MudOverlay @bind-Visible="IsDialogVisible" DarkBackground="true" AutoClose="true">
+    <div style="display: flex; justify-content: center;">
+        <MudImage Style="width:90%;margin:0 auto" Src='@Profile.Avatar'
+                  alt="Enlarged Image" ObjectFit="ObjectFit.ScaleDown" />
+    </div>
+</MudOverlay>
+<MudDrawer @bind-Open="@Open" Width="100%" Height="40" Anchor="@Anchor" Elevation="1" Variant="@DrawerVariant.Temporary">
+    <MudNavMenu>
+        <MudNavLink OnClick="OpenImageDialog">查看大图</MudNavLink>
+    </MudNavMenu>
+</MudDrawer>
+<MudCard Style="margin:10px 10px 10px 10px">
+    <MudCardHeader>
+        <CardHeaderAvatar>
+            <MudImage Src="@Profile.Avatar" Width="70" ObjectFit="ObjectFit.Cover" onclick="@(()=>{OpenAvatarDrawer(Anchor.Bottom);})"></MudImage>
+
+        </CardHeaderAvatar>
+        <CardHeaderContent>
+            <MudText Typo="Typo.body1">@Profile.DisplayName</MudText>
+            <MudText Typo="Typo.body1">用户名：@Profile.UserName</MudText>
+            <MudText Typo="Typo.body1">@(Profile.Sex ? "男" : "女")</MudText>
+        </CardHeaderContent>
+
+        <CardHeaderActions>
+            @if (CanEdit)
+            {
+                <MudFileUpload Accept=".png, .jpg" T="IBrowserFile" FilesChanged="OnSelectedAvatar">
+                    <ActivatorContent>
+                        <MudIconButton HtmlTag="label"
+                                       Color="Color.Default"
+                                       Icon="@Icons.Material.Filled.PhotoCamera">
+                        </MudIconButton>
+                    </ActivatorContent>
+                </MudFileUpload>
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="EditProfile" Color="Color.Default" />
+            }
+        </CardHeaderActions>
+
+    </MudCardHeader>
+    <MudCardContent>
+        <MudText Typo="Typo.body2">
+            个人签名: @if (Profile.Signature == null)
+            {
+                <span>暂无</span>
+            }
+            else
+            {
+                <span>@Profile.Signature</span>
+            }
+        </MudText>
+
+    </MudCardContent>
+    <MudCardContent>
+        <MudText Typo="Typo.body2">
+            <span>@Profile.Email</span>
+        </MudText>
+    </MudCardContent>
+    <MudCardContent>
+        <MudText Typo="Typo.body2">生日: @Profile.Birthday</MudText>
+    </MudCardContent>
+    <MudCardContent>
+        <MudText Typo="Typo.body2">积分: @Profile.Integrals?.Sum(x => (int)x.Type)</MudText>
+    </MudCardContent>
+    @if (CanEdit)
+    {
+        @if (!@Profile.TodayIsCheckIn)
+        {
+            <MudButton Variant="Variant.Filled"
+                       OnClick="CheckInAsync"
+                       Style="margin:5px 15px 5px 15px"
+                       StartIcon="@Icons.Material.Filled.Check" Color="Color.Primary">签到</MudButton>
+        }
+        else
+        {
+            <MudButton Variant="Variant.Filled"
+                       Style="margin:5px 15px 5px 15px"
+                       Disabled="true"
+                       StartIcon="@Icons.Material.Filled.Circle" Color="Color.Primary">已签到</MudButton>
+        }
+
+        <MudText Typo="Typo.body2" Style="margin:5px 0px 5px 15px">
+            已连续签到
+            <MudElement HtmlTag="a"
+                        Class="ms-1"
+                        Style="color:red;font-weight:bold;"
+                        href="https://github.com/MudBlazor/MudBlazor"
+                        target="blank"
+                        rel="noopener noreferrer">
+                @Profile.ContinueCheckInDays
+            </MudElement>
+            天
+        </MudText>
+    }
+
+    @if (!CanEdit)
+    {
+        if (!Profile.TodayIsLike)
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.Favorite" Variant="Variant.Outlined"
+                           OnClick="LikeAsync" Size="Size.Small"
+                           Style="margin:5px 15px 5px 15px" Color="Color.Secondary"></MudIconButton>
+        }
+
+        else
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.Favorite" Size="Size.Small" Variant="Variant.Filled" Style="margin:5px 15px 5px 15px" Color="Color.Secondary"></MudIconButton>
+        }
+    }
+</MudCard>
+
+@if (Profile.Integrals != null && Profile.Integrals.Count > 0)
+{
+    <MudCard Style="margin:10px 10px 10px 10px;">
+        <MudText Typo="Typo.h6" Style="margin:2px">历史动态</MudText>
+        <MudTimeline Style="margin:5px">
+            @foreach (var item in Profile.Integrals)
+            {
+                if (item.Type == Common.Dtos.Account.IntegralType.Checkin)
+                {
+                    <MudTimelineItem Color="Color.Info">
+                        <MudText Typo="Typo.button">用户签到 (+5积分)</MudText>
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">@item.CreateTime</MudText>
+                    </MudTimelineItem>
+                }
+
+                if (item.Type == Common.Dtos.Account.IntegralType.Comment)
+                {
+                    <MudTimelineItem Color="Color.Warning">
+                        <MudText Typo="Typo.button">发表了一个评论 (+2积分)</MudText>
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">@item.CreateTime</MudText>
+                    </MudTimelineItem>
+                }
+
+                if (item.Type == Common.Dtos.Account.IntegralType.Like)
+                {
+                    <MudTimelineItem Color="Color.Error">
+                        <MudText Typo="Typo.button">对某人表达了浓烈的喜欢 (+10积分)</MudText>
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">@item.CreateTime</MudText>
+                    </MudTimelineItem>
+                }
+
+                if (item.Type == Common.Dtos.Account.IntegralType.PublishRecord)
+                {
+                    <MudTimelineItem Color="Color.Success">
+                        <MudText Typo="Typo.button">发表了一篇日记 (+12积分)</MudText>
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">@item.CreateTime</MudText>
+                    </MudTimelineItem>
+                }
+            }
+        </MudTimeline>
+    </MudCard>
+}

@@ -1,0 +1,24 @@
+﻿@inherits LiJunSpace.ViewModels.NewEventComponentViewModel
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@page "/newEvent"
+
+<MudCard Style="margin:5px 5px 5px 5px;height:100%">
+    <div style="display: flex">
+        <MudButton HtmlTag="label"
+                   Style="margin-left:auto;margin-right:20px;margin-top:10px"
+                   Variant="Variant.Filled"
+                   OnClick="@PublishNewEventAsync"
+                   Color="Color.Primary"
+                   StartIcon="@Icons.Material.Filled.Publish">
+            发布
+        </MudButton>
+    </div>
+    <MudCardContent xs="12">
+        <MudTextField @bind-Value="@Title" For="@(() =>Title)" xs="12" Label="标题" Variant="Variant.Outlined" Clearable="true" />
+    </MudCardContent>
+    <MudDatePicker PickerVariant="PickerVariant.Dialog" @bind-Date="Time" Style="margin: 0 20px 20px 20px" />
+    <MudCheckBox @bind-Value="@Desc" Label="倒计时" Color="Color.Primary"></MudCheckBox>
+    <MudCheckBox @bind-Value="@ShowOnMain" Label="显示主页" Color="Color.Success"></MudCheckBox>
+</MudCard>
+
